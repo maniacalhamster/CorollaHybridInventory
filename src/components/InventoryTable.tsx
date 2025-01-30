@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpIcon, ArrowDownIcon } from "lucide-react"
+import { ArrowUpNarrowWideIcon, ArrowDownWideNarrowIcon, MenuIcon } from "lucide-react"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
@@ -30,17 +30,22 @@ import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 import { type InventoryItem, fetchInventoryData } from "@/utils/fetchData"
+import { cn } from "@/lib/utils"
 
-const renderSortIndicator = (column: Column<InventoryItem, unknown>) => {
-  if (column.getIsSorted() === false) return null
-
+const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
   const sortDirection = column.getIsSorted()
 
+  const Icon = {
+      asc: ArrowUpNarrowWideIcon,
+      desc: ArrowDownWideNarrowIcon,
+      false: MenuIcon, // Default icon when unsorted
+  }[sortDirection as "asc" | "desc" | "false"];
+
   return (
-    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-gray-800 bg-gray-200 rounded-full">
-      {sortIndex + 1}
-      {sortDirection === "asc" ? <ArrowUpIcon className="w-3 h-3 ml-1" /> : <ArrowDownIcon className="w-3 h-3 ml-1" />}
+    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-gray-800">
+      {sortDirection !== false && sortIndex + 1}
+      <Icon className="w-3 h-3 ml-1" />
     </span>
   )
 }
@@ -68,19 +73,19 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "msrp",
-    cell: ({ row }) => <div>${row.getValue("msrp").toLocaleString()}</div>,
+    cell: ({ row }) => <div>${row.getValue("msrp")}</div>,
   },
   {
     accessorKey: "tsrp",
-    cell: ({ row }) => <div>${row.getValue("tsrp").toLocaleString()}</div>,
+    cell: ({ row }) => <div>${row.getValue("tsrp")}</div>,
   },
   {
     accessorKey: "markup",
-    cell: ({ row }) => <div>${row.getValue("markup").toLocaleString()}</div>,
+    cell: ({ row }) => <div>${row.getValue("markup")}</div>,
   },
   {
     accessorKey: "price",
-    cell: ({ row }) => <div>${row.getValue("price").toLocaleString()}</div>,
+    cell: ({ row }) => <div>${row.getValue("price")}</div>,
   },
   {
     accessorKey: "status",
@@ -118,7 +123,7 @@ export function InventoryTable() {
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({column}) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc", true)} onContextMenu={(e) => {e.preventDefault(); column.clearSorting()}} >
+      <Button className={cn("w-full justify-between", column.getIsSorted() ? "text-accent-foreground bg-accent": "")} variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc", true)} onContextMenu={(e) => {e.preventDefault(); column.clearSorting()}} >
         <span>{column.id}</span>
         {renderSortIndicator(column)}
       </Button>
