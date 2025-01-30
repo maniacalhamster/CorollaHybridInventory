@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import {
+  Column,
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
@@ -13,6 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { ArrowUpIcon, ArrowDownIcon } from "lucide-react"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
@@ -29,65 +31,66 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 import { type InventoryItem, fetchInventoryData } from "@/utils/fetchData"
 
+const renderSortIndicator = (column: Column<InventoryItem, unknown>) => {
+  if (column.getIsSorted() === false) return null
+
+  const sortIndex = column.getSortIndex()
+  const sortDirection = column.getIsSorted()
+
+  return (
+    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-gray-800 bg-gray-200 rounded-full">
+      {sortIndex + 1}
+      {sortDirection === "asc" ? <ArrowUpIcon className="w-3 h-3 ml-1" /> : <ArrowDownIcon className="w-3 h-3 ml-1" />}
+    </span>
+  )
+}
+
 const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "vin",
-    header: "VIN",
     cell: ({ row }) => <div className="font-medium">{row.getValue("vin")}</div>,
   },
   {
     accessorKey: "distance",
-    header: "Distance",
     cell: ({ row }) => <div>{row.getValue("distance")} mi</div>,
   },
   {
     accessorKey: "dealer",
-    header: "Dealer",
   },
   {
     accessorKey: "model",
-    header: "Model",
   },
   {
     accessorKey: "color",
-    header: "Color",
   },
   {
     accessorKey: "seating",
-    header: "Seating",
   },
   {
     accessorKey: "msrp",
-    header: "MSRP",
     cell: ({ row }) => <div>${row.getValue("msrp").toLocaleString()}</div>,
   },
   {
     accessorKey: "tsrp",
-    header: "TSRP",
     cell: ({ row }) => <div>${row.getValue("tsrp").toLocaleString()}</div>,
   },
   {
     accessorKey: "markup",
-    header: "Markup",
     cell: ({ row }) => <div>${row.getValue("markup").toLocaleString()}</div>,
   },
   {
     accessorKey: "price",
-    header: "Price",
     cell: ({ row }) => <div>${row.getValue("price").toLocaleString()}</div>,
   },
   {
     accessorKey: "status",
-    header: "Status",
   },
   {
     accessorKey: "presold",
-    header: "Presold",
     cell: ({ row }) => <div>{row.getValue("presold") ? "Yes" : "No"}</div>,
   },
   {
     accessorKey: "link",
-    header: "Link",
     cell: ({ row }) => (
       <a
         href={row.getValue("link")}
@@ -113,9 +116,21 @@ export function InventoryTable() {
     fetchInventoryData().then(setData)
   }, [])
 
+  const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
+    header: ({column}) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc", true)} onContextMenu={(e) => {e.preventDefault(); column.clearSorting()}} >
+        <span>{column.id}</span>
+        {renderSortIndicator(column)}
+      </Button>
+    )
+  }
+
+
   const table = useReactTable({
     data,
     columns,
+    defaultColumn,
+    enableMultiSort: true,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
