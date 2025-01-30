@@ -25,6 +25,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 import { type InventoryItem, fetchInventoryData } from "@/utils/fetchData"
 
@@ -106,6 +107,7 @@ export function InventoryTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [globalFilter, setGlobalFilter] = useState("")
+  const [pageSize, setPageSize] = useState(10)
 
   useEffect(() => {
     fetchInventoryData().then(setData)
@@ -127,6 +129,10 @@ export function InventoryTable() {
       columnFilters,
       columnVisibility,
       globalFilter,
+      pagination: {
+        pageIndex: 0,
+        pageSize,
+      },
     },
   })
 
@@ -198,12 +204,49 @@ export function InventoryTable() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
           selected.
         </div>
-        <div className="space-x-2">
+        <div className="flex items-center space-x-2">
+          <p className="text-sm font-medium">Rows per page</p>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Input
+                type="number"
+                min={1}
+                max={100}
+                value={pageSize}
+                onChange={(e) => {
+                  const value = Number(e.target.value)
+                  setPageSize(value > 0 ? value : 1)
+                  table.setPageIndex(0)
+                }}
+                className="h-8 w-[70px]"
+              />
+            </PopoverTrigger>
+            <PopoverContent className="w-[70px] p-0">
+              <div className="flex flex-col">
+                {[10, 20, 30, 40, 50].map((size) => (
+                  <Button
+                    key={size}
+                    variant="ghost"
+                    className="justify-start"
+                    onClick={() => {
+                      setPageSize(size)
+                      table.setPageIndex(0)
+                    }}
+                  >
+                    {size}
+                  </Button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          </div>
           <Button
             variant="outline"
             size="sm"
