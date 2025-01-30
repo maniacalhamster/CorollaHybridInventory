@@ -11,7 +11,7 @@ import { fileURLToPath } from "url";
 async function script(page) {
     const curr_dir = path.dirname(fileURLToPath(import.meta.url))
     const filename = `${model}.json`
-    const dest_path = path.join(curr_dir, '..', 'data', filename)
+    const dest_path = path.join(curr_dir, '..', 'public', filename)
 
     const inventory_url = `https://www.toyota.com/search-inventory/model/${model}/?zipcode=${zipcode}`
     const graphql_url = "https://api.search-inventory.toyota.com/graphql";
