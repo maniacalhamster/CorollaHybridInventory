@@ -43,10 +43,12 @@ const renderSortIndicator = (column: Column<InventoryItem>) => {
   }[sortDirection as "asc" | "desc" | "false"];
 
   return (
-    <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-gray-800">
-      {sortDirection !== false && sortIndex + 1}
-      <Icon className="w-3 h-3 ml-1" />
-    </span>
+    <Button className={sortDirection ? "text-accent-foreground bg-accent": ""} size="icon" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc", true)} onContextMenu={(e) => {e.preventDefault(); column.clearSorting()}} >
+      <span className="inline-flex items-center justify-center rounded-md text-xs font-semibold text-gray-800">
+        {sortDirection !== false && sortIndex + 1}
+        <Icon className="w-3 h-3 ml-1" />
+      </span>
+    </Button>
   )
 }
 
@@ -125,11 +127,11 @@ export function InventoryTable() {
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({column}) => (
-      <Button className={cn("w-full justify-between", column.getIsSorted() ? "text-accent-foreground bg-accent": "")} variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc", true)} onContextMenu={(e) => {e.preventDefault(); column.clearSorting()}} >
+      <div className={cn("w-full inline-flex items-center justify-between", column.getIsSorted() ? "text-accent-foreground": "")}>
         <span>{column.id}</span>
         {renderSortIndicator(column)}
-      </Button>
-    )
+      </div>
+    ),
   }
 
 
@@ -193,13 +195,13 @@ export function InventoryTable() {
         </DropdownMenu>
       </div>
       <div className="rounded-md border">
-        <Table>
+        <Table className="whitespace-nowrap">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow className="divide-x" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="px-4" key={header.id}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   )
@@ -212,7 +214,7 @@ export function InventoryTable() {
               table.getRowModel().rows.map((row) => (
                 <TableRow className="divide-x" key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell className="px-6" key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell className="px-4" key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
