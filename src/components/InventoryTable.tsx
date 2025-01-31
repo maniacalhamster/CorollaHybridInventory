@@ -43,7 +43,7 @@ const renderSortIndicator = (column: Column<InventoryItem>) => {
   }[sortDirection as "asc" | "desc" | "false"];
 
   return (
-    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-gray-800">
+    <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-gray-800">
       {sortDirection !== false && sortIndex + 1}
       <Icon className="w-3 h-3 ml-1" />
     </span>
@@ -113,7 +113,9 @@ export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    'status': false,
+  })
   const [globalFilter, setGlobalFilter] = useState("")
   const [pageSize, setPageSize] = useState(10)
 
@@ -194,7 +196,7 @@ export function InventoryTable() {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow className="divide-x" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
@@ -208,9 +210,9 @@ export function InventoryTable() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow className="divide-x" key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell className="px-6" key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
