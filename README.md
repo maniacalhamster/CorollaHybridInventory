@@ -2,7 +2,7 @@ Sucessor to https://github.com/maniacalhamster/CamryHybridInventory
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Additionally, I elected to use Typescript, ESlint, and TailwindCSS. The base of this project was generated using Vercel's v0 model, relying on Tanstack Table as the main engine and shadcn for UI components.
+Additionally, I elected to use Typescript, ESlint, and TailwindCSS. The base of this project was generated using Vercel's [v0](https://v0.dev/) model, relying on [Tanstack Table](https://tanstack.com/table/latest) as the main engine and [shadcn](https://ui.shadcn.com/) for UI components.
 
 ## Getting Started
 
@@ -22,3 +22,9 @@ Similar story to https://github.com/maniacalhamster/CamryHybridInventory?tab=rea
 - provide a more user-friendly interface
 - explore Vercel's v0 model
 - refresh my familiarity with NextJS, shadcn, and Tanstack Table
+
+## TODO
+
+- [ ] Add a "what it does" section w/ screenshots
+- [ ] Integrate data fetch into main app rather than relying on a script
+- [ ] Remove default configs and prompt user for zipcode/radius
