@@ -126,13 +126,19 @@ export function InventoryTable() {
   }, [])
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
-    header: ({column}) => (
-      <div className={cn("w-full inline-flex items-center justify-between", column.getIsSorted() ? "text-accent-foreground": "")}>
+    header: ({ column }) => (
+      <div
+        className={cn(
+          "w-full inline-flex items-center justify-between gap-5 pl-2",
+          column.getIsSorted() ? "text-accent-foreground" : "",
+          ["msrp", "tsrp"].includes(column.id) ? "uppercase" : "capitalize"
+        )}
+      >
         <span>{column.id}</span>
         {renderSortIndicator(column)}
       </div>
     ),
-  }
+  };
 
 
   const table = useReactTable({
@@ -201,7 +207,7 @@ export function InventoryTable() {
               <TableRow className="divide-x" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead className="px-4" key={header.id}>
+                    <TableHead key={header.id}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   )
