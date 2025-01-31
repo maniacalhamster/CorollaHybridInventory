@@ -1,36 +1,24 @@
+Sucessor to https://github.com/maniacalhamster/CamryHybridInventory 
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+Additionally, I elected to use Typescript, ESlint, and TailwindCSS. The base of this project was generated using Vercel's v0 model, relying on Tanstack Table as the main engine and shadcn for UI components.
 
 ## Getting Started
 
-First, run the development server:
+You'll need to install dependencies, modify configs, and run the inventory data fetching script first.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+`node` must be installed (v20.6.1 used while making this)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Run `npm i` to install dependencies
+2. Modify [scripts/config.json](./scripts/config.json) with the zipcode and radius you want to search from
+3. Run `npm run fetch` to invoke the [scripts/scrape-inventory-data.mjs](./scripts/scrape-inventory-data.mjs) script. This will use puppeteer to interact w/ https://www.toyota.com/search-inventory/model/corollahybrid and scrape the inventory data from network requests
+4. Run `npm run dev` to start the NextJS server
+5. Navigate to the "Local" link (defaults to http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Why?
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Similar story to https://github.com/maniacalhamster/CamryHybridInventory?tab=readme-ov-file#journeystory, but this time, I wanted to
+- provide a more user-friendly interface
+- explore Vercel's v0 model
+- refresh my familiarity with NextJS, shadcn, and Tanstack Table
