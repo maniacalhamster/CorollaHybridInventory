@@ -93,6 +93,9 @@ const columns: ColumnDef<InventoryItem>[] = [
     accessorKey: "status",
   },
   {
+    accessorKey: "estDate",
+  },
+  {
     accessorKey: "presold",
     cell: ({ row }) => <div>{row.getValue("presold") ? "Yes" : "No"}</div>,
   },
