@@ -135,7 +135,7 @@ export function InventoryTable() {
           ["msrp", "tsrp"].includes(column.id) ? "uppercase" : "capitalize"
         )}
       >
-        <span>{column.id}</span>
+        <span>{column.id.replace(/([a-z])([A-Z)])/g, '$1 $2')}</span>
         {renderSortIndicator(column)}
       </div>
     ),
