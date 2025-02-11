@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-import { type InventoryItem, OptionDataType, fetchInventoryData } from "@/utils/fetchData"
+import { type InventoryItem, OptionDataType, fetchInventoryData, sortOptions } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
 
@@ -148,8 +148,8 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "options",
-    cell: ({ row }) => <ul>{(row.getValue("options") as OptionDataType[]).map(({optionCd}) => (
-      <li key={optionCd}>{optionCd}</li>
+    cell: ({ row }) => <ul>{(row.getValue("options") as OptionDataType[]).sort(sortOptions).map(({optionType, optionCd, marketingName}) => (
+      <li title={marketingName} key={optionCd}>{`${optionType} - ${optionCd.substring(0, 4)}`}</li>
     ))}</ul>,
     filterFn: (row, columnId, filterValue: string[]) => {
       return filterValue.every((option) => (row.getValue(columnId) as OptionDataType[]).map(({optionCd}) => optionCd).includes(option));
@@ -192,7 +192,7 @@ export function InventoryTable() {
       (uniqueOptions as unknown as object[]).push(option)
     ) , [uniqueCDs, uniqueOptions]), [[""], []])
 
-    return uniqueOptions as OptionDataType[]
+    return uniqueOptions.sort(sortOptions) as OptionDataType[]
   }, [data])
 
   const optionFilters = ((columnFilters.find(({id}) => id === 'options')?.value)??[]) as string[];
@@ -201,15 +201,15 @@ export function InventoryTable() {
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({ column }) => (
       <div className="flex flex-col">
-      <div
-        className={cn(
-          "w-full inline-flex items-center justify-between gap-5 pl-2",
-          column.getIsSorted() ? "text-accent-foreground" : "",
-          ["msrp", "tsrp"].includes(column.id) ? "uppercase" : "capitalize"
-        )}
-      >
-        <span>{column.id.replace(/([a-z])([A-Z)])/g, '$1 $2')}</span>
-        {renderSortIndicator(column)}
+        <div
+          className={cn(
+            "w-full inline-flex items-center justify-between gap-5 pl-2",
+            column.getIsSorted() ? "text-accent-foreground" : "",
+            ["msrp", "tsrp"].includes(column.id) ? "uppercase" : "capitalize"
+          )}
+        >
+          <span>{column.id.replace(/([a-z])([A-Z)])/g, '$1 $2')}</span>
+          {renderSortIndicator(column)}
         </div>
         <div className="w-full">
           {
@@ -289,14 +289,14 @@ export function InventoryTable() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            {uniqueOptions.map(({optionCd, marketingName}) => (
+            {uniqueOptions.map(({optionType, optionCd, marketingName}) => (
               <DropdownMenuCheckboxItem
                 key={optionCd}
                 className="capitalize"
                 checked={optionFilters.includes(optionCd)}
                 onCheckedChange={(value) => value ? setOptionFilters([...optionFilters, optionCd]) : setOptionFilters(optionFilters.filter(option => option !== optionCd))}
               >
-                {marketingName}
+                {`${optionType} - ${marketingName}`}
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
