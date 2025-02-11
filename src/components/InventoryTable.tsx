@@ -5,10 +5,12 @@ import {
   Column,
   type ColumnDef,
   type ColumnFiltersState,
+  RowData,
   type SortingState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
+  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -31,6 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 import { type InventoryItem, OptionDataType, fetchInventoryData } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
+import ColumnFilter from "./ui/columnFilter"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -52,45 +55,86 @@ const renderSortIndicator = (column: Column<InventoryItem>) => {
   )
 }
 
+// https://tanstack.com/table/v8/docs/api/core/column-def#meta
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    filterVariant: "range" | "select" | "search"
+  }
+}
+
 const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "vin",
     cell: ({ row }) => <div className="font-medium">{row.getValue("vin")}</div>,
+    meta: {
+      filterVariant: 'search',
+    }
   },
   {
     accessorKey: "distance",
     cell: ({ row }) => <div>{row.getValue("distance")} mi</div>,
+    meta: {
+      filterVariant: 'range',
+    }
   },
   {
     accessorKey: "dealer",
+    meta: {
+      filterVariant: 'search',
+    }
   },
   {
     accessorKey: "model",
+    meta: {
+      filterVariant: 'select',
+    }
   },
   {
     accessorKey: "color",
+    meta: {
+      filterVariant: 'select',
+    }
   },
   {
     accessorKey: "seating",
+    meta: {
+      filterVariant: 'select',
+    }
   },
   {
     accessorKey: "msrp",
     cell: ({ row }) => <div>${row.getValue("msrp")}</div>,
+    meta: {
+      filterVariant: 'range',
+    }
   },
   {
     accessorKey: "tsrp",
     cell: ({ row }) => <div>${row.getValue("tsrp")}</div>,
+    meta: {
+      filterVariant: 'range',
+    }
   },
   {
     accessorKey: "markup",
     cell: ({ row }) => <div>${row.getValue("markup")}</div>,
+    meta: {
+      filterVariant: 'range',
+    }
   },
   {
     accessorKey: "price",
     cell: ({ row }) => <div>${row.getValue("price")}</div>,
+    meta: {
+      filterVariant: 'range',
+    }
   },
   {
     accessorKey: "status",
+    meta: {
+      filterVariant: 'select',
+    }
   },
   {
     accessorKey: "estDate",
@@ -98,6 +142,9 @@ const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "presold",
     cell: ({ row }) => <div>{row.getValue("presold") ? "Yes" : "No"}</div>,
+    meta: {
+      filterVariant: 'select',
+    }
   },
   {
     accessorKey: "options",
@@ -153,6 +200,7 @@ export function InventoryTable() {
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({ column }) => (
+      <div className="flex flex-col">
       <div
         className={cn(
           "w-full inline-flex items-center justify-between gap-5 pl-2",
@@ -162,6 +210,14 @@ export function InventoryTable() {
       >
         <span>{column.id.replace(/([a-z])([A-Z)])/g, '$1 $2')}</span>
         {renderSortIndicator(column)}
+        </div>
+        <div className="w-full">
+          {
+            column.columnDef.meta?.filterVariant
+            ? <ColumnFilter column={column} />
+            : <></>
+          }
+        </div>
       </div>
     ),
   };
@@ -178,6 +234,7 @@ export function InventoryTable() {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
     state: {
