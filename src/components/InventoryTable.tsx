@@ -118,9 +118,7 @@ export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    'status': false,
-  })
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [globalFilter, setGlobalFilter] = useState("")
   const [pageSize, setPageSize] = useState(10)
 
@@ -181,7 +179,7 @@ export function InventoryTable() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns
+              Toggle Column Visibility
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
