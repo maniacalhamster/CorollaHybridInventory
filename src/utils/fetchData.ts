@@ -37,7 +37,24 @@ function statusResolver (c: string): status {
 
 function estDateResolver (c: string): string { 
   return (rangeRegExp.exec(c)??[""])[0]
- };
+};
+
+export function sortOptions(a: OptionDataType, b: OptionDataType) {
+  // prio Factory, Port, then Dealer options (i.e. mandatory -> optional)
+  const optionTypeOrder = {
+    'F': 2,
+    'P': 1,
+    'D': 0
+  }
+
+  // first, try to prio by type
+  const [aPrio, bPrio] = [optionTypeOrder[a.optionType], optionTypeOrder[b.optionType]]
+  if (aPrio > bPrio) return -1
+  if (aPrio < bPrio) return 1
+
+  // then alphabetically by optionCD name
+  return a.optionCd.localeCompare(b.optionCd)
+}
 
 export async function fetchInventoryData(): Promise<InventoryItem[]> {
   const response = await fetch("./corollahybrid.json")
@@ -56,7 +73,7 @@ export async function fetchInventoryData(): Promise<InventoryItem[]> {
     price: item.price.advertizedPrice || item.price.sellingPrice,
     dioTsrp: item.price.dioTotalMsrp,
     dioPrice: item.price.dioTotalDealerSellingPrice,
-    options: item.options ? item.options.sort((a: OptionDataType, b: OptionDataType) => a.optionType.localeCompare(b.optionType)) : [],
+    options: item.options ? item.options.sort(sortOptions) : [],
     status: statusResolver(item.inventoryStatus),
     estDate: estDateResolver(item.inventoryStatus),
     presold: item.isPreSold,
