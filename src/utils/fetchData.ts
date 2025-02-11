@@ -1,3 +1,9 @@
+export type OptionDataType = {
+  optionCd: string,
+  marketingName: string,
+  marketingLongName: string,
+  optionType: 'F' | 'P' | 'D',
+}
 export interface InventoryItem {
   vin: string
   distance: number
@@ -11,7 +17,7 @@ export interface InventoryItem {
   price: number
   dioTsrp: number
   dioPrice: number
-  options: any[]
+  options: OptionDataType[],
   status: status,
   estDate: string,
   presold: boolean
@@ -50,7 +56,7 @@ export async function fetchInventoryData(): Promise<InventoryItem[]> {
     price: item.price.advertizedPrice || item.price.sellingPrice,
     dioTsrp: item.price.dioTotalMsrp,
     dioPrice: item.price.dioTotalDealerSellingPrice,
-    options: item.options ? item.options.sort((a: any, b: any) => a.optionType.localeCompare(b.optionType)) : [],
+    options: item.options ? item.options.sort((a: OptionDataType, b: OptionDataType) => a.optionType.localeCompare(b.optionType)) : [],
     status: statusResolver(item.inventoryStatus),
     estDate: estDateResolver(item.inventoryStatus),
     presold: item.isPreSold,

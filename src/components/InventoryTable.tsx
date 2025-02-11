@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import {
   Column,
   type ColumnDef,
@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-import { type InventoryItem, fetchInventoryData } from "@/utils/fetchData"
+import { type InventoryItem, OptionDataType, fetchInventoryData } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
@@ -100,6 +100,15 @@ const columns: ColumnDef<InventoryItem>[] = [
     cell: ({ row }) => <div>{row.getValue("presold") ? "Yes" : "No"}</div>,
   },
   {
+    accessorKey: "options",
+    cell: ({ row }) => <ul>{(row.getValue("options") as OptionDataType[]).map(({optionCd}) => (
+      <li key={optionCd}>{optionCd}</li>
+    ))}</ul>,
+    filterFn: (row, columnId, filterValue: string[]) => {
+      return filterValue.every((option) => (row.getValue(columnId) as OptionDataType[]).map(({optionCd}) => optionCd).includes(option));
+    }
+  },
+  {
     accessorKey: "link",
     cell: ({ row }) => (
       <a
@@ -118,13 +127,29 @@ export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    'options': false,
+  })
   const [globalFilter, setGlobalFilter] = useState("")
   const [pageSize, setPageSize] = useState(10)
 
   useEffect(() => {
     fetchInventoryData().then(setData)
   }, [])
+
+  const uniqueOptions = useMemo(() => {
+    const options = data.map(({options}) => options).flat()
+
+    const [, uniqueOptions] = options.reduce(([uniqueCDs, uniqueOptions], option) => (
+      uniqueCDs.includes(option.optionCd) ?  null : (uniqueCDs.push(option.optionCd), 
+      (uniqueOptions as unknown as object[]).push(option)
+    ) , [uniqueCDs, uniqueOptions]), [[""], []])
+
+    return uniqueOptions as OptionDataType[]
+  }, [data])
+
+  const optionFilters = ((columnFilters.find(({id}) => id === 'options')?.value)??[]) as string[];
+  const setOptionFilters = (newOptionFilters: string[]) => table.getColumn('options')?.setFilterValue(newOptionFilters);
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({ column }) => (
@@ -170,15 +195,15 @@ export function InventoryTable() {
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <Input
+        {/* <Input
           placeholder="Filter all columns..."
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(String(event.target.value))}
           className="max-w-sm"
-        />
+        /> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline">
               Toggle Column Visibility
             </Button>
           </DropdownMenuTrigger>
@@ -198,6 +223,25 @@ export function InventoryTable() {
                   </DropdownMenuCheckboxItem>
                 )
               })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Filter Options
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {uniqueOptions.map(({optionCd, marketingName}) => (
+              <DropdownMenuCheckboxItem
+                key={optionCd}
+                className="capitalize"
+                checked={optionFilters.includes(optionCd)}
+                onCheckedChange={(value) => value ? setOptionFilters([...optionFilters, optionCd]) : setOptionFilters(optionFilters.filter(option => option !== optionCd))}
+              >
+                {marketingName}
+              </DropdownMenuCheckboxItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
