@@ -182,7 +182,7 @@ export function InventoryTable() {
               Toggle Column Visibility
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="start" className="dropdown-content-width-full">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
