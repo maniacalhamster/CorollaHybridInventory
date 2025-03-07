@@ -81,7 +81,7 @@ const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "dealer",
     meta: {
-      filterVariant: 'search',
+      filterVariant: 'select',
     }
   },
   {
