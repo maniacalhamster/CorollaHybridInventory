@@ -42,11 +42,13 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
   const columnFilterValue = column.getFilterValue()
   const { filterVariant } = column.columnDef.meta ?? {}
 
+  const facetedUniqueValues = column.getFacetedUniqueValues();
+
   const sortedUniqueValues = React.useMemo(() => {
     if (filterVariant === 'range') return []
-    const uniqueValuesWithCount = Array.from(column.getFacetedUniqueValues().entries())
+    const uniqueValuesWithCount = Array.from(facetedUniqueValues.entries())
     return uniqueValuesWithCount
-  }, [column.getFacetedUniqueValues, filterVariant])
+  }, [facetedUniqueValues, filterVariant])
 
   return filterVariant === 'range' ? (
     <div>
