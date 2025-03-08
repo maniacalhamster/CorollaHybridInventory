@@ -44,7 +44,8 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
 
   const sortedUniqueValues = React.useMemo(() => {
     if (filterVariant === 'range') return []
-    return Array.from(column.getFacetedUniqueValues().keys()).sort()
+    const uniqueValuesWithCount = Array.from(column.getFacetedUniqueValues().entries())
+    return uniqueValuesWithCount
   }, [column.getFacetedUniqueValues, filterVariant])
 
   return filterVariant === 'range' ? (
@@ -78,15 +79,17 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
       value={columnFilterValue?.toString()}
     >
       <option value="">All</option>
-      {sortedUniqueValues.map(value => (
-        <option value={value} key={value}>{value}</option>
+      {sortedUniqueValues.map(([value, count]) => (
+        <option className='' value={value} key={value}>
+          {value} ({count})
+        </option>
       ))}
     </select>
   ) : (
     <>
     <datalist id={`${column.id}-list`}>
-      {sortedUniqueValues.map((value) => (
-        <option value={value} key={value}>value</option>
+      {sortedUniqueValues.map(([value, ]) => (
+        <option value={value} key={value}></option>
       ))}
     </datalist>
     <DebouncedInput
