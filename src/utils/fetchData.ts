@@ -17,7 +17,9 @@ export interface InventoryItem {
   price: number
   dioTsrp: number
   dioPrice: number
-  options: OptionDataType[],
+  portOptions: OptionDataType[],
+  dealerOptions:  OptionDataType[],
+  factoryOptions: OptionDataType[],
   status: status,
   estDate: string,
   presold: boolean
@@ -47,6 +49,17 @@ function colorResolver (c: string): string {
   return c.replace(/\[extra_cost_color\]/, "(+$500)")
 }
 
+function dealerOptionsResolver(options: OptionDataType[]) {
+  return options.filter(o => o.optionType === 'D')
+}
+
+function factoryOptionsResolver(options: OptionDataType[]) {
+  return options.filter(o => o.optionType === 'F')
+}
+
+function portOptionsResolver(options: OptionDataType[]) {
+  return options.filter(o => o.optionType === 'P')
+}
 
 export function sortOptions(a: OptionDataType, b: OptionDataType) {
   // prio Factory, Port, then Dealer options (i.e. mandatory -> optional)
@@ -82,7 +95,9 @@ export async function fetchInventoryData(): Promise<InventoryItem[]> {
     price: item.price.advertizedPrice || item.price.sellingPrice,
     dioTsrp: item.price.dioTotalMsrp,
     dioPrice: item.price.dioTotalDealerSellingPrice,
-    options: item.options ? item.options.sort(sortOptions) : [],
+    portOptions: portOptionsResolver(item.options),
+    dealerOptions: dealerOptionsResolver(item.options),
+    factoryOptions: factoryOptionsResolver(item.options),
     status: statusResolver(item.inventoryStatus),
     estDate: estDateResolver(item.inventoryStatus),
     presold: item.isPreSold,

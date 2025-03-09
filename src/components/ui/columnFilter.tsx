@@ -46,6 +46,7 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
 
   const sortedUniqueValues = React.useMemo(() => {
     if (filterVariant === 'range') return []
+
     const uniqueValuesWithCount = Array.from(facetedUniqueValues.entries())
     return uniqueValuesWithCount
   }, [facetedUniqueValues, filterVariant])
@@ -79,6 +80,20 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
       title={`${column.id}-filter`}
       onChange={e => column.setFilterValue(e.target.value)}
       value={columnFilterValue?.toString()}
+    >
+      <option value="">All</option>
+      {sortedUniqueValues.map(([value, count]) => (
+        <option className='' value={value} key={value}>
+          {value} ({count})
+        </option>
+      ))}
+    </select>
+  ) : filterVariant === 'multi-select' ? (
+    <select
+      title={`${column.id}-filter`}
+      onChange={e => column.setFilterValue(Array.from(e.target.selectedOptions, option => option.value))}
+      value={columnFilterValue?.toString()}
+      // multiple
     >
       <option value="">All</option>
       {sortedUniqueValues.map(([value, count]) => (
