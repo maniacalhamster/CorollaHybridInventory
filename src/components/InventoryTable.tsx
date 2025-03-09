@@ -179,7 +179,10 @@ export function InventoryTable() {
     'options': false,
   })
   const [globalFilter, setGlobalFilter] = useState("")
-  const [pageSize, setPageSize] = useState(10)
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   useEffect(() => {
     fetchInventoryData().then(setData)
@@ -239,15 +242,13 @@ export function InventoryTable() {
     getFacetedUniqueValues: getFacetedUniqueValues(),
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       globalFilter,
-      pagination: {
-        pageIndex: 0,
-        pageSize,
-      },
+      pagination,
     },
   })
 
@@ -351,10 +352,10 @@ export function InventoryTable() {
                 type="number"
                 min={1}
                 max={100}
-                value={pageSize}
+                value={pagination.pageSize}
                 onChange={(e) => {
                   const value = Number(e.target.value)
-                  setPageSize(value > 0 ? value : 1)
+                  table.setPageSize(value > 0 ? value : 1)
                   table.setPageIndex(0)
                 }}
                 className="h-8 w-[70px]"
@@ -368,7 +369,7 @@ export function InventoryTable() {
                     variant="ghost"
                     className="justify-start"
                     onClick={() => {
-                      setPageSize(size)
+                      table.setPageSize(size)
                       table.setPageIndex(0)
                     }}
                   >
