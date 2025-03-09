@@ -39,6 +39,15 @@ function estDateResolver (c: string): string {
   return (rangeRegExp.exec(c)??[""])[0]
 };
 
+function modelResolver (c: string): string {
+  return c.replace(/Corolla Hybrid /, '')
+}
+
+function colorResolver (c: string): string {
+  return c.replace(/\[extra_cost_color\]/, "(+$500)")
+}
+
+
 export function sortOptions(a: OptionDataType, b: OptionDataType) {
   // prio Factory, Port, then Dealer options (i.e. mandatory -> optional)
   const optionTypeOrder = {
@@ -64,8 +73,8 @@ export async function fetchInventoryData(): Promise<InventoryItem[]> {
     vin: item.vin,
     distance: item.distance,
     dealer: item.dealerMarketingName,
-    model: item.model.marketingName,
-    color: item.extColor.marketingName,
+    model: modelResolver(item.model.marketingName),
+    color: colorResolver(item.extColor.marketingName),
     seating: item.intColor.marketingName,
     msrp: item.price.baseMsrp,
     tsrp: item.price.totalMsrp,
