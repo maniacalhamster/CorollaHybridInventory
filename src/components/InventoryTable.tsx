@@ -220,7 +220,6 @@ export function InventoryTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     'options': false,
   })
-  const [globalFilter, setGlobalFilter] = useState("")
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -269,13 +268,11 @@ export function InventoryTable() {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     onColumnVisibilityChange: setColumnVisibility,
-    onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      globalFilter,
       pagination,
     },
   })
@@ -283,12 +280,6 @@ export function InventoryTable() {
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        {/* <Input
-          placeholder="Filter all columns..."
-          value={globalFilter ?? ""}
-          onChange={(event) => setGlobalFilter(String(event.target.value))}
-          className="max-w-sm"
-        /> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
