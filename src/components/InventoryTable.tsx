@@ -172,33 +172,6 @@ const columns: ColumnDef<InventoryItem>[] = [
     }
   },
   {
-    accessorKey: "portOptions",
-    cell: optionCell,
-    filterFn: optionFilterFn,
-    meta: {
-      filterVariant: 'multi-select'
-    },
-    getUniqueValues: (row) => row.portOptions.map(({ optionCd }) => optionCd),
-  },
-  {
-    accessorKey: "dealerOptions",
-    cell: optionCell,
-    filterFn: optionFilterFn,
-    meta: {
-      filterVariant: 'multi-select'
-    },
-    getUniqueValues: (row) => row.dealerOptions.map(({ optionCd }) => optionCd),
-  },
-  {
-    accessorKey: "factoryOptions",
-    cell: optionCell,
-    filterFn: optionFilterFn,
-    meta: {
-      filterVariant: 'multi-select'
-    },
-    getUniqueValues: (row) => row.factoryOptions.map(({ optionCd }) => optionCd),
-  },
-  {
     accessorKey: "link",
     cell: ({ row }) => (
       <a
@@ -210,6 +183,33 @@ const columns: ColumnDef<InventoryItem>[] = [
         View
       </a>
     ),
+  },
+  {
+    accessorKey: "portOptions",
+    cell: optionCell,
+    filterFn: optionFilterFn,
+    meta: {
+      filterVariant: 'multi-select'
+    },
+    getUniqueValues: (row) => row.portOptions.map(({ optionCd }) => optionCd),
+  },
+  {
+    accessorKey: "factoryOptions",
+    cell: optionCell,
+    filterFn: optionFilterFn,
+    meta: {
+      filterVariant: 'multi-select'
+    },
+    getUniqueValues: (row) => row.factoryOptions.map(({ optionCd }) => optionCd),
+  },
+  {
+    accessorKey: "dealerOptions",
+    cell: optionCell,
+    filterFn: optionFilterFn,
+    meta: {
+      filterVariant: 'multi-select'
+    },
+    getUniqueValues: (row) => row.dealerOptions.map(({ optionCd }) => optionCd),
   },
 ]
 
