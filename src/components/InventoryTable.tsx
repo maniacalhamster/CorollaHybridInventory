@@ -218,7 +218,9 @@ export function InventoryTable() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    'options': false,
+    'msrp': false,
+    'estDate': false,
+    'presold': false,
   })
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -294,7 +296,7 @@ export function InventoryTable() {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
+                    className={cn("capitalize", column.getIsVisible() ? "" : "opacity-40")}
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     onSelect={(e) => e.preventDefault()}
