@@ -166,7 +166,7 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "presold",
-    cell: ({ row }) => <div>{row.getValue("presold") ? "Yes" : "No"}</div>,
+    accessorFn: (row) => row.presold ? "Yes" : "No",
     meta: {
       filterVariant: 'select',
     }
