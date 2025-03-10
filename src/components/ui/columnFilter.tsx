@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Column } from '@tanstack/react-table';
 import * as React from 'react';
+import MultiSelectDropdown from './multi-select';
 
 // A typical debounced input react component
 export function DebouncedInput({
@@ -89,19 +90,17 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
       ))}
     </select>
   ) : filterVariant === 'multi-select' ? (
-    <select
-      title={`${column.id}-filter`}
-      onChange={e => column.setFilterValue(Array.from(e.target.selectedOptions, option => option.value))}
-      value={columnFilterValue?.toString()}
-      // multiple
-    >
-      <option value="">All</option>
-      {sortedUniqueValues.map(([value, count]) => (
-        <option className='' value={value} key={value}>
-          {value} ({count})
-        </option>
-      ))}
-    </select>
+    <MultiSelectDropdown
+      options={
+        sortedUniqueValues.map(([value, count]) => ({
+          label: value,
+          count,
+          value
+        }))
+      }
+      selectedValues={(columnFilterValue as string[])??[]}
+      onChange={column.setFilterValue}
+    />
   ) : (
     <>
     <datalist id={`${column.id}-list`}>

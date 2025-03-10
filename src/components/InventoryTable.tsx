@@ -174,12 +174,20 @@ const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "portOptions",
     cell: optionCell,
-    filterFn: 'arrIncludesAll',
+    filterFn: optionFilterFn,
+    meta: {
+      filterVariant: 'multi-select'
+    },
+    getUniqueValues: (row) => row.portOptions.map(({ optionCd }) => optionCd),
   },
   {
     accessorKey: "dealerOptions",
     cell: optionCell,
     filterFn: optionFilterFn,
+    meta: {
+      filterVariant: 'multi-select'
+    },
+    getUniqueValues: (row) => row.dealerOptions.map(({ optionCd }) => optionCd),
   },
   {
     accessorKey: "factoryOptions",
