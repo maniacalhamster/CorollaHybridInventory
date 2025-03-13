@@ -16,6 +16,10 @@ You'll need to install dependencies, modify configs, and run the inventory data 
 4. Run `npm run dev` to start the NextJS server
 5. Navigate to the "Local" link (defaults to http://localhost:3000) in your browser
 
+## Demo
+
+![demo.gif](https://imgur.com/a/M1Da5BI)
+
 ## Why?
 
 Similar story to https://github.com/maniacalhamster/CamryHybridInventory?tab=readme-ov-file#journeystory, but this time, I wanted to
