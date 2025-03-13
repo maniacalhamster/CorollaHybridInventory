@@ -111,6 +111,7 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "model",
+    filterFn: 'equals',
     meta: {
       filterVariant: 'select',
     }
