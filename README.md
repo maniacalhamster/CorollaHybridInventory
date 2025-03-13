@@ -18,7 +18,7 @@ You'll need to install dependencies, modify configs, and run the inventory data 
 
 ## Demo
 
-![demo.gif](https://imgur.com/a/M1Da5BI)
+![demo.gif](https://i.imgur.com/wYqf0u6.gif "Demo GIF")
 
 ## Why?
 
