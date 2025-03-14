@@ -62,7 +62,8 @@ const renderSortIndicator = (column: Column<InventoryItem>) => {
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
-    filterVariant: "range" | "select" | "search" | "multi-select"
+    filterVariant: "range" | "select" | "search" | "multi-select" | ""
+    unsortable?: boolean
   }
 }
 
@@ -184,6 +185,10 @@ const columns: ColumnDef<InventoryItem>[] = [
         View
       </a>
     ),
+    meta: {
+      filterVariant: "",
+      unsortable: true
+    }
   },
   {
     accessorKey: "portOptions",
@@ -243,7 +248,7 @@ export function InventoryTable() {
           )}
         >
           <span>{column.id.replace(/([a-z])([A-Z)])/g, '$1 $2')}</span>
-          {renderSortIndicator(column)}
+          {column.columnDef.meta?.unsortable ?? renderSortIndicator(column)}
         </div>
         <div className="w-full">
           {
