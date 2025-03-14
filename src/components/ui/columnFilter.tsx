@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Column } from '@tanstack/react-table';
+import { Column, Table } from '@tanstack/react-table';
 import * as React from 'react';
 import MultiSelectDropdown from './multi-select';
 
@@ -39,15 +39,37 @@ export function DebouncedInput({
   );
 }
 
-export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}) {
+export default function ColumnFilter<T>({ column, table }: {
+  column: Column<T, unknown>;
+  table: Table<T>
+}) {
   const columnFilterValue = column.getFilterValue()
   const { filterVariant } = column.columnDef.meta ?? {}
 
   const facetedUniqueValues = column.getFacetedUniqueValues();
   const [facetedMinValue, facetedMaxValue] = column.getFacetedMinMaxValues()??[];
 
+
   const sortedUniqueValues = React.useMemo(() => {
     if (filterVariant === 'range') return []
+
+    if (filterVariant === 'multi-select') {
+      const customFacetedValues = new Map<any, number>()
+      const getUniqueValues = column.columnDef.getUniqueValues
+
+      table.getFilteredRowModel().rows.forEach(({original, index}) => {
+        const uniqueValues = getUniqueValues?.(original, index)
+        uniqueValues?.forEach(value => {
+          customFacetedValues.set(
+            value,
+            (customFacetedValues.get(value) || 0) + 1
+          )
+        })
+      })
+
+      const customUniqueValuesWithCount = Array.from(customFacetedValues.entries())
+      return customUniqueValuesWithCount
+    }
 
     const uniqueValuesWithCount = Array.from(facetedUniqueValues.entries())
     return uniqueValuesWithCount

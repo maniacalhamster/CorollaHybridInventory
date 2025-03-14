@@ -270,7 +270,7 @@ export function InventoryTable() {
         <div className="w-full">
           {
             column.columnDef.meta?.filterVariant
-            ? <ColumnFilter column={column} />
+            ? <ColumnFilter column={column} table={table} />
             : <></>
           }
         </div>
