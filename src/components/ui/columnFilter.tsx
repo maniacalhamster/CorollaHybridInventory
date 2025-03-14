@@ -46,34 +46,28 @@ export default function ColumnFilter<T>({ column, table }: {
   const columnFilterValue = column.getFilterValue()
   const { filterVariant } = column.columnDef.meta ?? {}
 
-  const facetedUniqueValues = column.getFacetedUniqueValues();
+  const facetedUniqueValuesMap = column.getFacetedUniqueValues();
   const [facetedMinValue, facetedMaxValue] = column.getFacetedMinMaxValues()??[];
 
 
-  const sortedUniqueValues = React.useMemo(() => {
-    if (filterVariant === 'range') return []
+  const facetedUniqueValues = React.useMemo(() => {
+    if (filterVariant !== 'multi-select') return Array.from(facetedUniqueValuesMap.entries())
 
-    if (filterVariant === 'multi-select') {
-      const customFacetedValues = new Map<any, number>()
-      const getUniqueValues = column.columnDef.getUniqueValues
+    const getUniqueValues = column.columnDef.getUniqueValues
 
-      table.getFilteredRowModel().rows.forEach(({original, index}) => {
-        const uniqueValues = getUniqueValues?.(original, index)
-        uniqueValues?.forEach(value => {
-          customFacetedValues.set(
-            value,
-            (customFacetedValues.get(value) || 0) + 1
-          )
-        })
+    const newFacetedUniqueValuesMap = new Map<any, number>()
+    table.getFilteredRowModel().rows.forEach(({original, index}) => {
+      const uniqueValues = getUniqueValues?.(original, index)
+      uniqueValues?.forEach(value => {
+        newFacetedUniqueValuesMap.set(
+          value,
+          (newFacetedUniqueValuesMap.get(value) || 0) + 1
+        )
       })
+    })
 
-      const customUniqueValuesWithCount = Array.from(customFacetedValues.entries())
-      return customUniqueValuesWithCount
-    }
-
-    const uniqueValuesWithCount = Array.from(facetedUniqueValues.entries())
-    return uniqueValuesWithCount
-  }, [facetedUniqueValues, filterVariant])
+    return Array.from(newFacetedUniqueValuesMap.entries())
+  }, [facetedUniqueValuesMap, filterVariant])
 
   return filterVariant === 'range' ? (
     <div>
@@ -106,7 +100,7 @@ export default function ColumnFilter<T>({ column, table }: {
       value={columnFilterValue?.toString()}
     >
       <option value="">All</option>
-      {sortedUniqueValues.map(([value, count]) => (
+      {facetedUniqueValues.map(([value, count]) => (
         <option className='' value={value} key={value}>
           {value} ({count})
         </option>
@@ -115,7 +109,7 @@ export default function ColumnFilter<T>({ column, table }: {
   ) : filterVariant === 'multi-select' ? (
     <MultiSelectDropdown
       options={
-        sortedUniqueValues.map(([value, count]) => ({
+        facetedUniqueValues.map(([value, count]) => ({
           label: value,
           count,
           value
@@ -127,7 +121,7 @@ export default function ColumnFilter<T>({ column, table }: {
   ) : (
     <>
     <datalist id={`${column.id}-list`}>
-      {sortedUniqueValues.map(([value, ]) => (
+      {facetedUniqueValues.map(([value, ]) => (
         <option value={value} key={value}></option>
       ))}
     </datalist>
