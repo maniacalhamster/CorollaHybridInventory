@@ -68,6 +68,22 @@ declare module "@tanstack/react-table" {
   }
 }
 
+const moneyCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.Element = ({
+  row,
+  column: { id }
+}) => {
+  const value = row.getValue(id) as number;
+  const formattedValue = new Intl.NumberFormat('en-US').format(Math.abs(value));
+
+  return (
+    <div className={cn("flex justify-between", value < 0 ? "text-red-500" : "")}>
+      <span>$</span>
+      <span>{(value < 0) ? `(${formattedValue})` : formattedValue}</span>
+    </div>
+  );
+};
+
+
 const optionCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.Element = ({
   row,
   column: {id}
@@ -132,28 +148,28 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "msrp",
-    cell: ({ row }) => <div>${row.getValue("msrp")}</div>,
+    cell: moneyCell,
     meta: {
       filterVariant: 'range',
     }
   },
   {
     accessorKey: "tsrp",
-    cell: ({ row }) => <div>${row.getValue("tsrp")}</div>,
+    cell: moneyCell,
     meta: {
       filterVariant: 'range',
     }
   },
   {
     accessorKey: "markup",
-    cell: ({ row }) => <div>${row.getValue("markup")}</div>,
+    cell: moneyCell,
     meta: {
       filterVariant: 'range',
     }
   },
   {
     accessorKey: "price",
-    cell: ({ row }) => <div>${row.getValue("price")}</div>,
+    cell: moneyCell,
     meta: {
       filterVariant: 'range',
     }
