@@ -12,6 +12,7 @@ import {
   type VisibilityState,
   flexRender,
   getCoreRowModel,
+  getFacetedMinMaxValues,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
@@ -275,6 +276,7 @@ export function InventoryTable() {
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     state: {

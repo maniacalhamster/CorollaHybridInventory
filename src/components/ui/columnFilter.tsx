@@ -44,6 +44,7 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
   const { filterVariant } = column.columnDef.meta ?? {}
 
   const facetedUniqueValues = column.getFacetedUniqueValues();
+  const [facetedMinValue, facetedMaxValue] = column.getFacetedMinMaxValues()??[];
 
   const sortedUniqueValues = React.useMemo(() => {
     if (filterVariant === 'range') return []
@@ -61,7 +62,7 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
           onChange={value =>
             column.setFilterValue((old: [number, number]) => [value, old?.[1]])
           }
-          placeholder={`Min`}
+          placeholder={`${facetedMinValue}`}
           className="w-12 border shadow rounded"
         />
         <DebouncedInput
@@ -70,7 +71,7 @@ export default function ColumnFilter<T>({ column }: {column: Column<T, unknown>}
           onChange={value =>
             column.setFilterValue((old: [number, number]) => [old?.[0], value])
           }
-          placeholder={`Max`}
+          placeholder={`${facetedMaxValue}`}
           className="w-12 border shadow rounded"
         />
       </div>
