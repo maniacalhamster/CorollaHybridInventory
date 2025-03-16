@@ -12,12 +12,14 @@ interface MultiSelectDropdownProps<T> {
   options: { label: string; count: number, value: T, details?: string }[];
   selectedValues: T[];
   onChange: (values: T[]) => void;
+  renderValue?: (value: T) => string;
 }
 
 const MultiSelectDropdown = <T,>({
   options,
   selectedValues,
   onChange,
+  renderValue,
 }: MultiSelectDropdownProps<T>) => {
   const [open, setOpen] = useState(false);
 
@@ -34,7 +36,7 @@ const MultiSelectDropdown = <T,>({
       <DropdownMenuTrigger asChild className="w-full py-0 h-min">
         <Button variant="outline">
           {selectedValues.length > 0
-            ? selectedValues.map((value) => `(${value})`).join(" ")
+            ? selectedValues.map((value) => renderValue?.(value)).join(" ")
             : "All"}
         </Button>
       </DropdownMenuTrigger>

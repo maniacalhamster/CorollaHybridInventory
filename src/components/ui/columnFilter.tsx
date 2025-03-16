@@ -121,6 +121,7 @@ export default function ColumnFilter<T>({ column, table }: {
       }
       selectedValues={(columnFilterValue as OptionDataType[])??[]}
       onChange={column.setFilterValue}
+      renderValue={ ({optionCd}) => `(${optionCd})`}
     />
   ) : (
     <>
