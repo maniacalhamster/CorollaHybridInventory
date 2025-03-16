@@ -8,20 +8,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-interface MultiSelectDropdownProps {
-  options: { label: string; count: number, value: string, details?: string }[];
-  selectedValues: string[];
-  onChange: (values: string[]) => void;
+interface MultiSelectDropdownProps<T> {
+  options: { label: string; count: number, value: T, details?: string }[];
+  selectedValues: T[];
+  onChange: (values: T[]) => void;
 }
 
-const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
+const MultiSelectDropdown = <T,>({
   options,
   selectedValues,
   onChange,
-}) => {
+}: MultiSelectDropdownProps<T>) => {
   const [open, setOpen] = useState(false);
 
-  const handleSelection = (value: string) => {
+  const handleSelection = (value: T) => {
     const newSelected = selectedValues.includes(value)
       ? selectedValues.filter((v) => v !== value) // Remove if already selected
       : [...selectedValues, value]; // Add new selection
@@ -42,7 +42,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
         {options.map(({ label, count, value, details }) => (
           <DropdownMenuCheckboxItem
             title={details}
-            key={value}
+              key={label}
             checked={selectedValues.includes(value)}
             onCheckedChange={() => handleSelection(value)}
             onSelect={(e) => e.preventDefault()}
