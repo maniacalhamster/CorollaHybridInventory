@@ -78,30 +78,52 @@ export function sortOptions(a: OptionDataType, b: OptionDataType) {
   return a.optionCd.localeCompare(b.optionCd)
 }
 
+// Normalize options lists so that unique options point to the same reference
+// -- uniqueness determined by optionCd property
+// -- ensures table.getFacetedUniqueValues will work properly
+function normalizeOptions(options: OptionDataType[], uniqueOptionsMap: Map<string, OptionDataType>): OptionDataType[] {
+  return options.map((option) => {
+    const {optionCd} = option;
+
+    if (!uniqueOptionsMap.has(optionCd)) {
+      uniqueOptionsMap.set(optionCd, option)
+    }
+
+    return uniqueOptionsMap.get(optionCd) as OptionDataType
+  })
+}
+
 export async function fetchInventoryData(): Promise<InventoryItem[]> {
   const response = await fetch("./corollahybrid.json")
   const rawData = await response.json()
 
-  return rawData.map((item: any) => ({
-    vin: item.vin,
-    distance: item.distance,
-    dealer: item.dealerMarketingName,
-    model: modelResolver(item.model.marketingName),
-    color: colorResolver(item.extColor.marketingName),
-    seating: item.intColor.marketingName,
-    msrp: item.price.baseMsrp,
-    tsrp: item.price.totalMsrp,
-    markup: (item.price.advertizedPrice || item.price.sellingPrice) - item.price.totalMsrp,
-    price: item.price.advertizedPrice || item.price.sellingPrice,
-    dioTsrp: item.price.dioTotalMsrp,
-    dioPrice: item.price.dioTotalDealerSellingPrice,
-    portOptions: portOptionsResolver(item.options),
-    dealerOptions: dealerOptionsResolver(item.options),
-    factoryOptions: factoryOptionsResolver(item.options),
-    status: statusResolver(item.inventoryStatus),
-    estDate: estDateResolver(item.inventoryStatus),
-    presold: item.isPreSold,
-    link: `https://smartpath.toyota.com/inventory/details?source=t1&dealerCd=${item.dealerCd}&vin=${item.vin}&type=new`,
-  }))
+  // Keep a shared uniqueOptionsMap between all items for noramlization
+  const uniqueOptionsMap = new Map<string, OptionDataType>();
+
+  return rawData.map((item: any) => {
+    const normalizedOptions = normalizeOptions(item.options, uniqueOptionsMap)
+
+    return {
+      vin: item.vin,
+      distance: item.distance,
+      dealer: item.dealerMarketingName,
+      model: modelResolver(item.model.marketingName),
+      color: colorResolver(item.extColor.marketingName),
+      seating: item.intColor.marketingName,
+      msrp: item.price.baseMsrp,
+      tsrp: item.price.totalMsrp,
+      markup: (item.price.advertizedPrice || item.price.sellingPrice) - item.price.totalMsrp,
+      price: item.price.advertizedPrice || item.price.sellingPrice,
+      dioTsrp: item.price.dioTotalMsrp,
+      dioPrice: item.price.dioTotalDealerSellingPrice,
+      portOptions: portOptionsResolver(normalizedOptions),
+      dealerOptions: dealerOptionsResolver(normalizedOptions),
+      factoryOptions: factoryOptionsResolver(normalizedOptions),
+      status: statusResolver(item.inventoryStatus),
+      estDate: estDateResolver(item.inventoryStatus),
+      presold: item.isPreSold,
+      link: `https://smartpath.toyota.com/inventory/details?source=t1&dealerCd=${item.dealerCd}&vin=${item.vin}&type=new`,
+    }
+  })
 }
 
