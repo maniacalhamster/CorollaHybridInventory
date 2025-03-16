@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import { Column, Table } from '@tanstack/react-table';
 import * as React from 'react';
 import MultiSelectDropdown from './multi-select';
+import { OptionDataType } from '@/utils/fetchData';
 
 // A typical debounced input react component
 export function DebouncedInput({
@@ -107,15 +108,18 @@ export default function ColumnFilter<T>({ column, table }: {
       ))}
     </select>
   ) : filterVariant === 'multi-select' ? (
-    <MultiSelectDropdown
+    <MultiSelectDropdown<OptionDataType>
       options={
-        facetedUniqueValues.map(([value, count]) => ({
-          label: value,
-          count,
-          value
-        }))
+        facetedUniqueValues.map(([value, count]) => {
+          const {optionCd, marketingName } = value as OptionDataType
+
+          return {
+            label: `${optionCd} - ${marketingName}`,
+            count,
+            value,
+        } })
       }
-      selectedValues={(columnFilterValue as string[])??[]}
+      selectedValues={(columnFilterValue as OptionDataType[])??[]}
       onChange={column.setFilterValue}
     />
   ) : (

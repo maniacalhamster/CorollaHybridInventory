@@ -97,13 +97,13 @@ const optionCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.
   </span>
 )
 
-const optionFilterFn: (row: Row<InventoryItem>, columnId: string, filterValue: string[]) => boolean = (
+const optionFilterFn: (row: Row<InventoryItem>, columnId: string, filterValue: OptionDataType[]) => boolean = (
   row,
   columnId,
-  filterValue: string[]
+  filterValue: OptionDataType[]
 ) => {
   const currOptionCds = (row.getValue(columnId) as OptionDataType[]).map(({ optionCd }) => optionCd)
-  return filterValue.every((filterCd) => currOptionCds.includes(filterCd));
+  return filterValue.every(({optionCd: filterCd}) => currOptionCds.includes(filterCd));
 }
 
 const columns: ColumnDef<InventoryItem>[] = [
@@ -214,7 +214,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     meta: {
       filterVariant: 'multi-select'
     },
-    getUniqueValues: (row) => row.portOptions.map(({ optionCd }) => optionCd),
+    getUniqueValues: (row) => row.portOptions.map((option) => option),
   },
   {
     accessorKey: "factoryOptions",
@@ -223,7 +223,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     meta: {
       filterVariant: 'multi-select'
     },
-    getUniqueValues: (row) => row.factoryOptions.map(({ optionCd }) => optionCd),
+    getUniqueValues: (row) => row.factoryOptions.map((option) => option),
   },
   {
     accessorKey: "dealerOptions",
@@ -232,7 +232,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     meta: {
       filterVariant: 'multi-select'
     },
-    getUniqueValues: (row) => row.dealerOptions.map(({ optionCd }) => optionCd),
+    getUniqueValues: (row) => row.dealerOptions.map((option) => option),
   },
 ]
 
