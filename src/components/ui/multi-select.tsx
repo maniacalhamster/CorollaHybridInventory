@@ -41,6 +41,7 @@ const MultiSelectDropdown = <T,>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="dropdown-content-width-full">
+        <div className="overflow-y-scroll pr-3  max-h-[calc(50vh)]">
         {options.map(({ label, count, value, details }) => (
           <DropdownMenuCheckboxItem
             title={details}
@@ -54,6 +55,7 @@ const MultiSelectDropdown = <T,>({
             <span>({count})</span>
           </DropdownMenuCheckboxItem>
         ))}
+        </div>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
           checked={selectedValues.length === options.length}
