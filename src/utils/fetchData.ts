@@ -86,6 +86,7 @@ function normalizeOptions(options: OptionDataType[], uniqueOptionsMap: Map<strin
     const {optionCd} = option;
 
     if (!uniqueOptionsMap.has(optionCd)) {
+      option.marketingName = option.marketingName.replace("\[installed_msrp\]", "")
       uniqueOptionsMap.set(optionCd, option)
     }
 
