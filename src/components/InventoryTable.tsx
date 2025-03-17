@@ -35,7 +35,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-import { type InventoryItem, OptionDataType, fetchInventoryData, sortOptions } from "@/utils/fetchData"
+import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData, sortOptions } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
 
@@ -250,6 +250,8 @@ export function InventoryTable() {
     pageSize: 10,
   })
 
+  const {pageIndex, pageSize} = pagination
+
   useEffect(() => {
     fetchInventoryData().then(setData)
   }, [])
@@ -278,7 +280,6 @@ export function InventoryTable() {
     ),
   };
 
-
   const table = useReactTable({
     data,
     columns,
@@ -302,6 +303,17 @@ export function InventoryTable() {
       pagination,
     },
   })
+
+  const emptyRows = useMemo(() => {
+    const numFillerRows = (pageSize - (table.getRowModel().rows.length % pageSize)) % pageSize
+    const emptyRows = Array.from(
+      { length: (pageIndex < table.getPageCount() - 1) ? 0 : numFillerRows},
+      () => (emptyInventoryItem)
+    );
+    return [...emptyRows];
+  }, [table.getPageCount(), table.getRowModel().rows.length, pageSize, pageIndex])
+
+  const noResultsHeight = `${37*pageSize}px`;
 
   return (
     <div className="w-full">
@@ -358,11 +370,15 @@ export function InventoryTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell style={{height: noResultsHeight}} colSpan={columns.length} className="text-center">
                   No results.
                 </TableCell>
               </TableRow>
             )}
+            {emptyRows.map((row, index) => (
+              <TableRow className="divide-x h-[37px]" key={`empty-row-${index}`}>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>
@@ -385,7 +401,7 @@ export function InventoryTable() {
                   table.setPageSize(value > 0 ? value : 1)
                   table.setPageIndex(0)
                 }}
-                className="h-8 w-[70px]"
+                className="h-8 w-14"
               />
             </PopoverTrigger>
             <PopoverContent className="w-[70px] p-0">

@@ -26,6 +26,28 @@ export interface InventoryItem {
   link: string
 }
 
+export const emptyInventoryItem: InventoryItem = {
+  vin: "",
+  distance: 0,
+  dealer: "",
+  model: "",
+  color: "",
+  seating: "",
+  msrp: 0,
+  tsrp: 0,
+  markup: 0,
+  price: 0,
+  dioTsrp: 0,
+  dioPrice: 0,
+  portOptions: [],
+  dealerOptions: [],
+  factoryOptions: [],
+  status: "build",
+  estDate: "",
+  presold: false,
+  link: ""
+}
+
 type status = 'build' | 'transit' | 'available'
 
 const dateRegExp = /\d{2}\/\d{2}\/\d{2}/
