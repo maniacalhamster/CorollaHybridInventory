@@ -426,16 +426,40 @@ export function InventoryTable() {
             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </div>
           <Button
+            title="first"
+            variant="outline"
+            size="sm"
+            onClick={() => table.firstPage()}
+            disabled={pageIndex === 0}
+          >{
+            '<<'
+          }</Button>
+          <Button
+            title="prev"
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
+          >{
+            '<'
+          }</Button>
+          <Button
+            title="next"
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}
+          >{
+            '>'
+          }</Button>
+          <Button
+            title="last"
+            variant="outline"
+            size="sm"
+            onClick={() => table.lastPage()}
+            disabled={pageIndex === table.getPageCount() - 1}
+          >{
+            '>>'
+          }</Button>
         </div>
       </div>
     </div>
