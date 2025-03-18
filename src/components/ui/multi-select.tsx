@@ -9,9 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 
 interface MultiSelectDropdownProps<T> {
-  options: { label: string; count: number, value: T, details?: string }[];
+  options: { label: string; count: number, value: T, details?: string }[] | undefined;
   selectedValues: T[];
-  onChange: (values: T[]) => void;
+  onChange: (values: T[] | undefined) => void;
   renderValue?: (value: T) => string;
 }
 
@@ -42,7 +42,7 @@ const MultiSelectDropdown = <T,>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="dropdown-content-width-full">
         <div className="overflow-y-scroll pr-3  max-h-[calc(50vh)]">
-          {options.map(({ label, count, value, details }) => (
+          {options?.map(({ label, count, value, details }) => (
             <DropdownMenuCheckboxItem
               title={details}
               key={label}
@@ -58,8 +58,8 @@ const MultiSelectDropdown = <T,>({
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
-          checked={selectedValues.length === options.length}
-          onCheckedChange={() => onChange([]) }
+          checked={selectedValues.length === options?.length}
+          onCheckedChange={() => onChange(undefined) }
         >
           Clear Filters
         </DropdownMenuCheckboxItem>
