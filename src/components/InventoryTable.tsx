@@ -262,17 +262,17 @@ export function InventoryTable() {
         <div
           className={cn(
             "w-full inline-flex items-center justify-between gap-5 pl-2",
-            column.getIsSorted() ? "text-accent-foreground" : "",
+            (column.getIsSorted() || column.getIsFiltered()) ? "text-accent-foreground" : "",
             ["msrp", "tsrp"].includes(column.id) ? "uppercase" : "capitalize"
           )}
         >
           <span>{column.id.replace(/([a-z])([A-Z)])/g, '$1 $2')}</span>
           {column.columnDef.meta?.unsortable ?? renderSortIndicator(column)}
         </div>
-        <div className="w-full">
+        <div className={cn("w-full", column.getIsFiltered() ? "text-black" : "")}>
           {
             column.columnDef.meta?.filterVariant
-            ? <ColumnFilter column={column} table={table} />
+            ? <ColumnFilter column={column} table={table}/>
             : <></>
           }
         </div>
