@@ -35,7 +35,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData, sortOptions } from "@/utils/fetchData"
+import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
 
@@ -109,9 +109,19 @@ const optionFilterFn: (row: Row<InventoryItem>, columnId: string, filterValue: O
 const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "vin",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("vin")}</div>,
+    cell: ({ row }) => (
+      <a
+        href={row.original.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline"
+      >
+        <div className="font-medium">{row.getValue("vin")}</div>
+      </a>
+    ),
     meta: {
       filterVariant: 'search',
+      unsortable: true
     }
   },
   {
@@ -188,23 +198,6 @@ const columns: ColumnDef<InventoryItem>[] = [
     accessorFn: (row) => row.presold ? "Yes" : "No",
     meta: {
       filterVariant: 'select',
-    }
-  },
-  {
-    accessorKey: "link",
-    cell: ({ row }) => (
-      <a
-        href={row.getValue("link")}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline"
-      >
-        View
-      </a>
-    ),
-    meta: {
-      filterVariant: "",
-      unsortable: true
     }
   },
   {
