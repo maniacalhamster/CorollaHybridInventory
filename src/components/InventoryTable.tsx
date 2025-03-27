@@ -35,9 +35,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData } from "@/utils/fetchData"
+import { type InventoryItem, OptionDataType, emptyInventoryItem } from "@/utils/transformData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
+import { ENDPOINTS } from "@/constants"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -230,6 +231,9 @@ const columns: ColumnDef<InventoryItem>[] = [
 ]
 
 export function InventoryTable() {
+  const [dateOptions, setDateOptions] = useState<string[]>([])
+  const [date, setDate] = useState<string>("")
+
   const [data, setData] = useState<InventoryItem[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -246,8 +250,18 @@ export function InventoryTable() {
   const {pageIndex, pageSize} = pagination
 
   useEffect(() => {
-    fetchInventoryData().then(setData)
+    fetch(ENDPOINTS.dates)
+      .then((resp) => resp.json())
+      .then((json: string[]) => setDateOptions(
+        json.sort((a, b) => b.localeCompare(a)
+      )))
   }, [])
+
+  useEffect(() => {
+    fetch(`${ENDPOINTS.inventory}?date=${date}`)
+      .then((resp) => resp.json())
+      .then((json) => setData(json))
+  }, [date])
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({ column }) => (
@@ -310,7 +324,7 @@ export function InventoryTable() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex justify-between items-center py-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
@@ -336,6 +350,21 @@ export function InventoryTable() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        <div className="flex gap-2 items-center">
+          <label htmlFor="inventory_date">
+            Inventory Date:
+          </label>
+          <select
+            id="inventory_date"
+            title="dataset selector"
+            className="p-1 border rounded"
+            onChange={(e) => setDate(e.currentTarget.value)}
+          >
+            {dateOptions.map(date => (
+              <option key={date} value={date}>{date}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table className="whitespace-nowrap">

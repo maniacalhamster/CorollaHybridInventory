@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import { Column, Table } from '@tanstack/react-table';
 import * as React from 'react';
 import MultiSelectDropdown from './multi-select';
-import { OptionDataType } from '@/utils/fetchData';
+import { OptionDataType } from '@/utils/transformData';
 
 // A typical debounced input react component
 export function DebouncedInput({

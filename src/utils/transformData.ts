@@ -4,6 +4,7 @@ export type OptionDataType = {
   marketingLongName: string,
   optionType: 'F' | 'P' | 'D',
 }
+
 export interface InventoryItem {
   vin: string
   distance: number
@@ -116,10 +117,7 @@ function normalizeOptions(options: OptionDataType[], uniqueOptionsMap: Map<strin
   })
 }
 
-export async function fetchInventoryData(): Promise<InventoryItem[]> {
-  const response = await fetch("./corollahybrid.json")
-  const rawData = await response.json()
-
+export async function transformRawData(rawData: unknown[]) {
   // Keep a shared uniqueOptionsMap between all items for noramlization
   const uniqueOptionsMap = new Map<string, OptionDataType>();
 
@@ -149,4 +147,3 @@ export async function fetchInventoryData(): Promise<InventoryItem[]> {
     }
   })
 }
-
