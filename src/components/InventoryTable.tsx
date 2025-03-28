@@ -2,12 +2,9 @@
 
 import { useState, useEffect, useMemo, JSX } from "react"
 import {
-  CellContext,
   Column,
   type ColumnDef,
   type ColumnFiltersState,
-  Row,
-  RowData,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -35,10 +32,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
-import { type InventoryItem, OptionDataType, emptyInventoryItem } from "@/utils/transformData"
+import { type InventoryItem, emptyInventoryItem } from "@/utils/transformData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
 import { ENDPOINTS, TODAY } from "@/constants"
+import { columns } from "./columns"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -59,176 +57,6 @@ const renderSortIndicator = (column: Column<InventoryItem>) => {
     </Button>
   )
 }
-
-// https://tanstack.com/table/v8/docs/api/core/column-def#meta
-declare module "@tanstack/react-table" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
-    filterVariant: "range" | "select" | "search" | "multi-select" | ""
-    unsortable?: boolean
-  }
-}
-
-const moneyCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.Element = ({
-  row,
-  column: { id }
-}) => {
-  const value = row.getValue(id) as number;
-  const formattedValue = new Intl.NumberFormat('en-US').format(Math.abs(value));
-
-  return (
-    <div className={cn("flex justify-between", value < 0 ? "text-red-500" : "")}>
-      <span>$</span>
-      <span>{(value < 0) ? `(${formattedValue})` : formattedValue}</span>
-    </div>
-  );
-};
-
-
-const optionCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.Element = ({
-  row,
-  column: {id}
-}) => (
-  <span className="flex gap-2">
-    {(row.getValue(id) as OptionDataType[]).map(({optionCd, marketingName}) => (
-      <span title={marketingName} key={optionCd}>
-        ({optionCd})
-      </span>
-    ))}
-  </span>
-)
-
-const optionFilterFn: (row: Row<InventoryItem>, columnId: string, filterValue: OptionDataType[]) => boolean = (
-  row,
-  columnId,
-  filterValue: OptionDataType[]
-) => {
-  const currOptionCds = (row.getValue(columnId) as OptionDataType[]).map(({ optionCd }) => optionCd)
-  return filterValue.every(({optionCd: filterCd}) => currOptionCds.includes(filterCd));
-}
-
-const columns: ColumnDef<InventoryItem>[] = [
-  {
-    accessorKey: "vin",
-    cell: ({ row }) => (
-      <a
-        href={row.original.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 hover:underline"
-      >
-        <div className="font-medium">{row.getValue("vin")}</div>
-      </a>
-    ),
-    meta: {
-      filterVariant: 'search',
-      unsortable: true
-    }
-  },
-  {
-    accessorKey: "distance",
-    cell: ({ row }) => <div>{row.getValue("distance")} mi</div>,
-    meta: {
-      filterVariant: 'range',
-    }
-  },
-  {
-    accessorKey: "dealer",
-    meta: {
-      filterVariant: 'select',
-    }
-  },
-  {
-    accessorKey: "model",
-    filterFn: 'equals',
-    meta: {
-      filterVariant: 'select',
-    }
-  },
-  {
-    accessorKey: "color",
-    meta: {
-      filterVariant: 'select',
-    }
-  },
-  {
-    accessorKey: "seating",
-    meta: {
-      filterVariant: 'select',
-    }
-  },
-  {
-    accessorKey: "msrp",
-    cell: moneyCell,
-    meta: {
-      filterVariant: 'range',
-    }
-  },
-  {
-    accessorKey: "tsrp",
-    cell: moneyCell,
-    meta: {
-      filterVariant: 'range',
-    }
-  },
-  {
-    accessorKey: "markup",
-    cell: moneyCell,
-    meta: {
-      filterVariant: 'range',
-    }
-  },
-  {
-    accessorKey: "price",
-    cell: moneyCell,
-    meta: {
-      filterVariant: 'range',
-    }
-  },
-  {
-    accessorKey: "status",
-    meta: {
-      filterVariant: 'select',
-    }
-  },
-  {
-    accessorKey: "estDate",
-  },
-  {
-    accessorKey: "presold",
-    accessorFn: (row) => row.presold ? "Yes" : "No",
-    meta: {
-      filterVariant: 'select',
-    }
-  },
-  {
-    accessorKey: "portOptions",
-    cell: optionCell,
-    filterFn: optionFilterFn,
-    meta: {
-      filterVariant: 'multi-select'
-    },
-    getUniqueValues: (row) => row.portOptions.map((option) => option),
-  },
-  {
-    accessorKey: "factoryOptions",
-    cell: optionCell,
-    filterFn: optionFilterFn,
-    meta: {
-      filterVariant: 'multi-select'
-    },
-    getUniqueValues: (row) => row.factoryOptions.map((option) => option),
-  },
-  {
-    accessorKey: "dealerOptions",
-    cell: optionCell,
-    filterFn: optionFilterFn,
-    meta: {
-      filterVariant: 'multi-select'
-    },
-    getUniqueValues: (row) => row.dealerOptions.map((option) => option),
-  },
-]
 
 export function InventoryTable() {
   const [dateOptions, setDateOptions] = useState<string[]>([])
