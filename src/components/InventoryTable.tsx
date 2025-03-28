@@ -64,6 +64,7 @@ declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     filterVariant: "range" | "select" | "search" | "multi-select" | ""
+    optionType?: "object" | "string"
     unsortable?: boolean
   }
 }
@@ -133,8 +134,10 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "dealer",
+    filterFn: 'arrIncludesSome',
     meta: {
-      filterVariant: 'select',
+      filterVariant: 'multi-select',
+      optionType: "string"
     }
   },
   {
@@ -146,8 +149,10 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "color",
+    filterFn: 'arrIncludesSome',
     meta: {
-      filterVariant: 'select',
+      filterVariant: 'multi-select',
+      optionType: "string"
     }
   },
   {
@@ -186,8 +191,10 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "status",
+    filterFn: 'arrIncludesSome',
     meta: {
-      filterVariant: 'select',
+      filterVariant: 'multi-select',
+      optionType: 'string'
     }
   },
   {
@@ -205,7 +212,8 @@ const columns: ColumnDef<InventoryItem>[] = [
     cell: optionCell,
     filterFn: optionFilterFn,
     meta: {
-      filterVariant: 'multi-select'
+      filterVariant: 'multi-select',
+      optionType: "object"
     },
     getUniqueValues: (row) => row.portOptions.map((option) => option),
   },
@@ -214,7 +222,8 @@ const columns: ColumnDef<InventoryItem>[] = [
     cell: optionCell,
     filterFn: optionFilterFn,
     meta: {
-      filterVariant: 'multi-select'
+      filterVariant: 'multi-select',
+      optionType: "object"
     },
     getUniqueValues: (row) => row.factoryOptions.map((option) => option),
   },
@@ -223,7 +232,8 @@ const columns: ColumnDef<InventoryItem>[] = [
     cell: optionCell,
     filterFn: optionFilterFn,
     meta: {
-      filterVariant: 'multi-select'
+      filterVariant: 'multi-select',
+      optionType: "object"
     },
     getUniqueValues: (row) => row.dealerOptions.map((option) => option),
   },

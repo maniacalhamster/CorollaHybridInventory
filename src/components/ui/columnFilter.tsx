@@ -45,14 +45,14 @@ export default function ColumnFilter<T>({ column, table }: {
   table: Table<T>
 }) {
   const columnFilterValue = column.getFilterValue()
-  const { filterVariant } = column.columnDef.meta ?? {}
+  const { filterVariant, optionType } = column.columnDef.meta ?? {}
 
   const facetedUniqueValuesMap = column.getFacetedUniqueValues();
   const [facetedMinValue, facetedMaxValue] = column.getFacetedMinMaxValues()??[];
 
 
   const facetedUniqueValues = React.useMemo(() => {
-    if (filterVariant !== 'multi-select') return Array.from(facetedUniqueValuesMap.entries())
+    if (optionType !== 'object') return Array.from(facetedUniqueValuesMap.entries())
 
     const getUniqueValues = column.columnDef.getUniqueValues
 
@@ -108,20 +108,30 @@ export default function ColumnFilter<T>({ column, table }: {
       ))}
     </select>
   ) : filterVariant === 'multi-select' ? (
-    <MultiSelectDropdown<OptionDataType>
+    <MultiSelectDropdown<T>
       options={
+        optionType === "object" ?
         facetedUniqueValues.map(([value, count]) => {
-          const {optionCd, marketingName } = value as OptionDataType
+          const {optionCd, marketingName } = value as T
 
           return {
             label: `${optionCd} - ${marketingName}`,
             count,
             value,
-        } })
+        } }) :
+        facetedUniqueValues.map(([value, count]) => ({
+          label: value,
+          count,
+          value
+        }))
       }
-      selectedValues={(columnFilterValue as OptionDataType[])??[]}
+      selectedValues={(columnFilterValue as T[])??[]}
       onChange={column.setFilterValue}
-      renderValue={ ({optionCd}) => `(${optionCd})`}
+      renderValue={ 
+        optionType === "object" ?
+        ({optionCd}) => `(${optionCd})` :
+        (value) => `(${value})`
+      }
     />
   ) : (
     <>
