@@ -38,7 +38,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { type InventoryItem, OptionDataType, emptyInventoryItem } from "@/utils/transformData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
-import { ENDPOINTS } from "@/constants"
+import { ENDPOINTS, TODAY } from "@/constants"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -232,7 +232,7 @@ const columns: ColumnDef<InventoryItem>[] = [
 
 export function InventoryTable() {
   const [dateOptions, setDateOptions] = useState<string[]>([])
-  const [date, setDate] = useState<string>("")
+  const [date, setDate] = useState<string>(TODAY)
 
   const [data, setData] = useState<InventoryItem[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
