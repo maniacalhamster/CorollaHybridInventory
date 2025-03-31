@@ -124,7 +124,7 @@ export async function fetchInventoryData(): Promise<InventoryItem[]> {
   const uniqueOptionsMap = new Map<string, OptionDataType>();
 
   return rawData.map((item: any) => {
-    const normalizedOptions = normalizeOptions(item.options, uniqueOptionsMap)
+    const normalizedOptions = normalizeOptions(item.options, uniqueOptionsMap).sort(sortOptions)
 
     return {
       vin: item.vin,

@@ -8,6 +8,7 @@ import {
   type ColumnFiltersState,
   Row,
   RowData,
+  SortingFn,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -84,6 +85,19 @@ const moneyCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.E
   );
 };
 
+const checkboxCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.Element = ({
+  row,
+  column: {id}
+}) => (
+      <input
+        key={row.getValue(id)}
+        title="presold"
+        type="checkbox"
+        checked={row.original[id as keyof InventoryItem] as boolean}
+        readOnly
+      />
+)
+
 
 const optionCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.Element = ({
   row,
@@ -105,6 +119,17 @@ const optionFilterFn: (row: Row<InventoryItem>, columnId: string, filterValue: O
 ) => {
   const currOptionCds = (row.getValue(columnId) as OptionDataType[]).map(({ optionCd }) => optionCd)
   return filterValue.every(({optionCd: filterCd}) => currOptionCds.includes(filterCd));
+}
+
+const optionSortingFn: SortingFn<InventoryItem> = (
+  rowA,
+  rowB,
+  columnId
+) => {
+  const optionsA = (rowA.getValue(columnId) as OptionDataType[]).map(({optionCd}) => optionCd).join()
+  const optionsB = (rowB.getValue(columnId) as OptionDataType[]).map(({optionCd}) => optionCd).join()
+
+  return optionsA.localeCompare(optionsB)
 }
 
 const columns: ColumnDef<InventoryItem>[] = [
@@ -192,6 +217,16 @@ const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "status",
     filterFn: 'arrIncludesSome',
+    sortingFn: (rowA, rowB, columnId) => { 
+      const prioMap = {
+        'available': 0,
+        'transit': 1,
+        'build': 2,
+      }
+      type StatusValue = keyof typeof prioMap
+
+      return prioMap[rowA.getValue(columnId) as StatusValue] - prioMap[rowB.getValue(columnId) as StatusValue]
+     },
     meta: {
       filterVariant: 'multi-select',
       optionType: 'string'
@@ -203,6 +238,7 @@ const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "presold",
     accessorFn: (row) => row.presold ? "Yes" : "No",
+    cell: checkboxCell,
     meta: {
       filterVariant: 'select',
     }
@@ -211,6 +247,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     accessorKey: "portOptions",
     cell: optionCell,
     filterFn: optionFilterFn,
+    sortingFn: optionSortingFn,
     meta: {
       filterVariant: 'multi-select',
       optionType: "object"
@@ -221,6 +258,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     accessorKey: "factoryOptions",
     cell: optionCell,
     filterFn: optionFilterFn,
+    sortingFn: optionSortingFn,
     meta: {
       filterVariant: 'multi-select',
       optionType: "object"
@@ -231,6 +269,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     accessorKey: "dealerOptions",
     cell: optionCell,
     filterFn: optionFilterFn,
+    sortingFn: optionSortingFn,
     meta: {
       filterVariant: 'multi-select',
       optionType: "object"
@@ -246,7 +285,7 @@ export function InventoryTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     'msrp': false,
     'estDate': false,
-    'presold': false,
+    // 'presold': false,
   })
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -365,7 +404,7 @@ export function InventoryTable() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow className="divide-x" key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow className="divide-x even:bg-slate-100" key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell className="px-4" key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
