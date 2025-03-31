@@ -8,6 +8,7 @@ import {
   type ColumnFiltersState,
   Row,
   RowData,
+  SortingFn,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -119,6 +120,17 @@ const optionFilterFn: (row: Row<InventoryItem>, columnId: string, filterValue: O
   return filterValue.every(({optionCd: filterCd}) => currOptionCds.includes(filterCd));
 }
 
+const optionSortingFn: SortingFn<InventoryItem> = (
+  rowA,
+  rowB,
+  columnId
+) => {
+  const optionsA = (rowA.getValue(columnId) as OptionDataType[]).map(({optionCd}) => optionCd).join()
+  const optionsB = (rowB.getValue(columnId) as OptionDataType[]).map(({optionCd}) => optionCd).join()
+
+  return optionsA.localeCompare(optionsB)
+}
+
 const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "vin",
@@ -228,6 +240,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     accessorKey: "portOptions",
     cell: optionCell,
     filterFn: optionFilterFn,
+    sortingFn: optionSortingFn,
     meta: {
       filterVariant: 'multi-select'
     },
@@ -237,6 +250,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     accessorKey: "factoryOptions",
     cell: optionCell,
     filterFn: optionFilterFn,
+    sortingFn: optionSortingFn,
     meta: {
       filterVariant: 'multi-select'
     },
@@ -246,6 +260,7 @@ const columns: ColumnDef<InventoryItem>[] = [
     accessorKey: "dealerOptions",
     cell: optionCell,
     filterFn: optionFilterFn,
+    sortingFn: optionSortingFn,
     meta: {
       filterVariant: 'multi-select'
     },
@@ -260,7 +275,7 @@ export function InventoryTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     'msrp': false,
     'estDate': false,
-    'presold': false,
+    // 'presold': false,
   })
   const [pagination, setPagination] = useState({
     pageIndex: 0,
