@@ -186,6 +186,16 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "status",
+    sortingFn: (rowA, rowB, columnId) => { 
+      const prioMap = {
+        'available': 0,
+        'transit': 1,
+        'build': 2,
+      }
+      type StatusValue = keyof typeof prioMap
+
+      return prioMap[rowA.getValue(columnId) as StatusValue] - prioMap[rowB.getValue(columnId) as StatusValue]
+     },
     meta: {
       filterVariant: 'select',
     }
