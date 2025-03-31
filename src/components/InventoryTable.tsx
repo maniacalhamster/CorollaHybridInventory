@@ -83,6 +83,19 @@ const moneyCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.E
   );
 };
 
+const checkboxCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.Element = ({
+  row,
+  column: {id}
+}) => (
+      <input
+        key={row.getValue(id)}
+        title="presold"
+        type="checkbox"
+        checked={row.original[id as keyof InventoryItem] as boolean}
+        readOnly
+      />
+)
+
 
 const optionCell: ({ row, column }: CellContext<InventoryItem, unknown>) => JSX.Element = ({
   row,
@@ -206,6 +219,7 @@ const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "presold",
     accessorFn: (row) => row.presold ? "Yes" : "No",
+    cell: checkboxCell,
     meta: {
       filterVariant: 'select',
     }
