@@ -291,18 +291,22 @@ export function InventoryTable() {
     ))
   }, [])
 
-  const optionResolverParserMap = useMemo(() => ({
+  const filterParserResolverMap = useMemo(() => {
+    const optionResolverParserMap = {
       resolver: (options: OptionDataType[]) => options.map(({optionCd}) => optionCd).join(','),
       parser: (options: string) => options.split(',').map((optionCd) => uniqueOptionsMap.get(optionCd)!)
-  }), [uniqueOptionsMap])
+    }
 
-  const [columnFilters, setColumnFilters] = useUrlFilters<InventoryItem>(
-    data.length > 0,
-    {
+    return {
       'portOptions': optionResolverParserMap,
       'dealerOptions': optionResolverParserMap,
       'factoryOptions': optionResolverParserMap,
     }
+  }, [uniqueOptionsMap])
+
+  const [columnFilters, setColumnFilters] = useUrlFilters<InventoryItem>(
+    data.length > 0 ,
+    filterParserResolverMap
   );
 
 
