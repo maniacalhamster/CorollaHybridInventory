@@ -270,6 +270,7 @@ const columns: ColumnDef<InventoryItem>[] = [
 
 export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
+  const [uniqueOptionsMap, setUniqueOptionsMap] = useState<Map<string, OptionDataType>>(new Map)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -285,7 +286,10 @@ export function InventoryTable() {
   const {pageIndex, pageSize} = pagination
 
   useEffect(() => {
-    fetchInventoryData().then(setData)
+    fetchInventoryData().then(([data, uniqueOptionsList]) => (
+      setData(data),
+      setUniqueOptionsMap(uniqueOptionsList)
+    ))
   }, [])
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
