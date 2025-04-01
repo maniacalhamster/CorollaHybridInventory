@@ -5,7 +5,6 @@ import {
   CellContext,
   Column,
   type ColumnDef,
-  type ColumnFiltersState,
   Row,
   RowData,
   SortingFn,
@@ -39,6 +38,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
+import { useUrlFilters } from "@/utils/hooks"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -272,7 +272,6 @@ export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
   const [uniqueOptionsMap, setUniqueOptionsMap] = useState<Map<string, OptionDataType>>(new Map)
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     'msrp': false,
     'estDate': false,
@@ -291,6 +290,21 @@ export function InventoryTable() {
       setUniqueOptionsMap(uniqueOptionsList)
     ))
   }, [])
+
+  const optionResolverParserMap = useMemo(() => ({
+      resolver: (options: OptionDataType[]) => options.map(({optionCd}) => optionCd).join(','),
+      parser: (options: string) => options.split(',').map((optionCd) => uniqueOptionsMap.get(optionCd)!)
+  }), [uniqueOptionsMap])
+
+  const [columnFilters, setColumnFilters] = useUrlFilters<InventoryItem>(
+    data.length > 0,
+    {
+      'portOptions': optionResolverParserMap,
+      'dealerOptions': optionResolverParserMap,
+      'factoryOptions': optionResolverParserMap,
+    }
+  );
+
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({ column }) => (
