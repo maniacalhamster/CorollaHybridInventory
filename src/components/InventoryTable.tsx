@@ -38,7 +38,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
-import { useUrlFilters } from "@/utils/hooks"
+import { FilterParserResolverMap, useUrlFilters } from "@/utils/hooks"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -291,7 +291,7 @@ export function InventoryTable() {
     ))
   }, [])
 
-  const filterParserResolverMap = useMemo(() => {
+  const filterParserResolverMap = useMemo<FilterParserResolverMap<InventoryItem>>(() => {
     const optionResolverParserMap = {
       resolver: (options: OptionDataType[]) => options.map(({optionCd}) => optionCd).join(','),
       parser: (options: string) => options.split(',').map((optionCd) => uniqueOptionsMap.get(optionCd)!)

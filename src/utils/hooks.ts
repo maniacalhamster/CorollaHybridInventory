@@ -33,7 +33,7 @@ function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?:
 
     filters.forEach(({id, value}) => {
         const { resolver } = filterParserResolverMap?.[ id as keyof T ]??{}
-        const resolvedValue = resolver ? resolver(value as T[keyof T]) : value
+        const resolvedValue = resolver ? resolver(value as FilterValueType<T[keyof T]>) : value
         if (!resolvedValue) return;
 
         const encodedValue = encodeURIComponent(resolvedValue as string);
@@ -45,10 +45,12 @@ function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?:
     window.history.pushState(null, '', `?${newUrlSearchParams.toString()}`);
 }
 
-type FilterParserResolverMap<T> = Partial<{
+type FilterValueType<T> = T extends number ? (number | undefined)[] : T;
+
+export type FilterParserResolverMap<T> = Partial<{
     [K in keyof T]: {
-        resolver: (value: T[K]) => string
-        parser: (value: string) =>  T[K]
+        resolver: (value: FilterValueType<T[K]>) => string
+        parser: (value: string) =>  FilterValueType<T[K]>
     }
 }>
 
