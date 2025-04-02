@@ -304,7 +304,7 @@ export function InventoryTable() {
     }
   }, [uniqueOptionsMap])
 
-  const [columnFilters, setColumnFilters] = useUrlFilters<InventoryItem>(
+  const [ columnFilters, handleFilterChange ] = useUrlFilters<InventoryItem>(
     data.length > 0 ,
     filterParserResolverMap
   );
@@ -340,7 +340,7 @@ export function InventoryTable() {
     defaultColumn,
     enableMultiSort: true,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: handleFilterChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),

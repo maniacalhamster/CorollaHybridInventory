@@ -1,6 +1,6 @@
 'use client';
 
-import { ColumnFiltersState } from "@tanstack/react-table";
+import { ColumnFiltersState, OnChangeFn } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -65,17 +65,19 @@ export function useUrlFilters<T>(dataIsLoaded: boolean, filterParserResolverMap?
         setColumnFilters(filters);
     }, [searchParams, filterParserResolverMap, dataIsLoaded, columnFilters]);
 
+    const handleFilterChange: OnChangeFn<ColumnFiltersState> = (updater) => {
+        if (typeof updater === 'function') {
+            const newFilters = updater(columnFilters)
+            setColumnFilters(newFilters)
+            setUrlFilters<T>(newFilters, filterParserResolverMap);
+        } else {
+            setColumnFilters(updater);
+            setUrlFilters<T>(updater, filterParserResolverMap);
+        }
+    }
+
     return [ 
         columnFilters,
-        (updater: ColumnFiltersState | ((prev: ColumnFiltersState) => ColumnFiltersState)) => {
-            if (typeof updater === 'function') {
-                const newFilters = updater(columnFilters)
-                setColumnFilters(newFilters)
-                setUrlFilters<T>(newFilters, filterParserResolverMap);
-            } else {
-                setColumnFilters(updater);
-                setUrlFilters<T>(updater, filterParserResolverMap);
-            }
-        }
-     ]
+        handleFilterChange
+     ] as const;
 }
