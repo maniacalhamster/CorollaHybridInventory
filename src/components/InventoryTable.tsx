@@ -297,10 +297,20 @@ export function InventoryTable() {
       parser: (options: string) => options.split(',').map((optionCd) => uniqueOptionsMap.get(optionCd)!)
     }
 
+    const rangeResolverParserMap = {
+      resolver: (range: (number | undefined)[]) => range.join(':'),
+      parser: (range: string) => range.split(':').map((val) => val === '' ? undefined : parseInt(val))
+    }
+
     return {
       'portOptions': optionResolverParserMap,
       'dealerOptions': optionResolverParserMap,
       'factoryOptions': optionResolverParserMap,
+      'distance': rangeResolverParserMap,
+      'msrp': rangeResolverParserMap,
+      'tsrp': rangeResolverParserMap,
+      'markup': rangeResolverParserMap,
+      'price': rangeResolverParserMap
     }
   }, [uniqueOptionsMap])
 
