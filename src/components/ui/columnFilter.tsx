@@ -40,8 +40,8 @@ export function DebouncedInput({
   );
 }
 
-export default function ColumnFilter<T>({ column, table }: {
-  column: Column<T, unknown>;
+export default function ColumnFilter<T, V>({ column, table }: {
+  column: Column<T, V>;
   table: Table<T>
 }) {
   const columnFilterValue = column.getFilterValue()
@@ -52,7 +52,7 @@ export default function ColumnFilter<T>({ column, table }: {
 
 
   const facetedUniqueValues = React.useMemo(() => {
-    if (filterVariant !== 'multi-select') return Array.from(facetedUniqueValuesMap.entries())
+    if (filterVariant !== 'multi-select' || !column.id.includes('option')) return Array.from(facetedUniqueValuesMap.entries())
 
     const getUniqueValues = column.columnDef.getUniqueValues
 
@@ -108,9 +108,15 @@ export default function ColumnFilter<T>({ column, table }: {
       ))}
     </select>
   ) : filterVariant === 'multi-select' ? (
-    <MultiSelectDropdown<OptionDataType>
+    <MultiSelectDropdown<V>
       options={
         facetedUniqueValues.map(([value, count]) => {
+          if (typeof value === 'string') return {
+            label: `(${value})`,
+            count,
+            value
+          }
+
           const {optionCd, marketingName } = value as OptionDataType
 
           return {
@@ -119,9 +125,14 @@ export default function ColumnFilter<T>({ column, table }: {
             value,
         } })
       }
-      selectedValues={(columnFilterValue as OptionDataType[])??[]}
+      selectedValues={(columnFilterValue as V[])??[]}
       onChange={column.setFilterValue}
-      renderValue={ ({optionCd}) => `(${optionCd})`}
+      renderValue={(value) => {
+        if (typeof value === 'string') return `(${value})`;
+
+        const {optionCd} = value as OptionDataType
+        return `(${optionCd})`
+      }}
     />
   ) : (
     <>

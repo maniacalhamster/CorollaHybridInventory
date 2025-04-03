@@ -131,6 +131,13 @@ const optionSortingFn: SortingFn<InventoryItem> = (
   return optionsA.localeCompare(optionsB)
 }
 
+const basicMultiSelectProps: Partial<ColumnDef<InventoryItem>> = {
+  filterFn: 'arrIncludesSome',
+  meta: {
+    filterVariant: 'multi-select'
+  }
+}
+
 const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: "vin",
@@ -158,22 +165,15 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "dealer",
-    meta: {
-      filterVariant: 'select',
-    }
+    ...basicMultiSelectProps
   },
   {
     accessorKey: "model",
-    filterFn: 'equals',
-    meta: {
-      filterVariant: 'select',
-    }
+    ...basicMultiSelectProps
   },
   {
     accessorKey: "color",
-    meta: {
-      filterVariant: 'select',
-    }
+    ...basicMultiSelectProps
   },
   {
     accessorKey: "seating",
@@ -221,9 +221,7 @@ const columns: ColumnDef<InventoryItem>[] = [
 
       return prioMap[rowA.getValue(columnId) as StatusValue] - prioMap[rowB.getValue(columnId) as StatusValue]
      },
-    meta: {
-      filterVariant: 'select',
-    }
+    ...basicMultiSelectProps
   },
   {
     accessorKey: "estDate",
@@ -302,7 +300,16 @@ export function InventoryTable() {
       parser: (range: string) => range.split(':').map((val) => val === '' ? undefined : parseInt(val))
     }
 
+    const stringMultiselectResolverParserMap = {
+      resolver: (dealers: string[]) => dealers.join(','),
+      parser: (dealers: string) => dealers.split(','),
+    }
+
     return {
+      'dealer': stringMultiselectResolverParserMap,
+      'color': stringMultiselectResolverParserMap,
+      'model': stringMultiselectResolverParserMap,
+      'status': stringMultiselectResolverParserMap,
       'portOptions': optionResolverParserMap,
       'dealerOptions': optionResolverParserMap,
       'factoryOptions': optionResolverParserMap,
