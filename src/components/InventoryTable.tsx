@@ -300,7 +300,16 @@ export function InventoryTable() {
       parser: (range: string) => range.split(':').map((val) => val === '' ? undefined : parseInt(val))
     }
 
+    const stringMultiselectResolverParserMap = {
+      resolver: (dealers: string[]) => dealers.join(','),
+      parser: (dealers: string) => dealers.split(','),
+    }
+
     return {
+      'dealer': stringMultiselectResolverParserMap,
+      'color': stringMultiselectResolverParserMap,
+      'model': stringMultiselectResolverParserMap,
+      'status': stringMultiselectResolverParserMap,
       'portOptions': optionResolverParserMap,
       'dealerOptions': optionResolverParserMap,
       'factoryOptions': optionResolverParserMap,
