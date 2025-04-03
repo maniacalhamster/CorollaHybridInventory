@@ -64,7 +64,9 @@ async function script(page) {
  * - defers a final close on the browser if it still exists
  */
 async function main() {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.connect({
+    browserWSEndpoint: 'ws://localhost:3000',
+  });
   const page = await browser.newPage();
   script(page)
     .catch((err) => console.log(err))
