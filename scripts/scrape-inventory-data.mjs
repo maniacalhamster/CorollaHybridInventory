@@ -64,8 +64,9 @@ async function script(page) {
  * - defers a final close on the browser if it still exists
  */
 async function main() {
+  const launchArgs = JSON.stringify({ headless: false });
   const browser = await puppeteer.connect({
-    browserWSEndpoint: 'ws://localhost:3000',
+    browserWSEndpoint: `ws://localhost:3000?launch=${launchArgs}`,
   });
   const page = await browser.newPage();
   script(page)
