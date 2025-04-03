@@ -105,14 +105,14 @@ export function sortOptions(a: OptionDataType, b: OptionDataType) {
 // -- ensures table.getFacetedUniqueValues will work properly
 function normalizeOptions(options: OptionDataType[], uniqueOptionsMap: Map<string, OptionDataType>): OptionDataType[] {
   return options.map((option) => {
-    const {optionCd} = option;
+    const {marketingName} = option;
 
-    if (!uniqueOptionsMap.has(optionCd)) {
+    if (!uniqueOptionsMap.has(marketingName)) {
       option.marketingName = option.marketingName.replace("\[installed_msrp\]", "")
-      uniqueOptionsMap.set(optionCd, option)
+      uniqueOptionsMap.set(marketingName, option)
     }
 
-    return uniqueOptionsMap.get(optionCd) as OptionDataType
+    return uniqueOptionsMap.get(marketingName) as OptionDataType
   })
 }
 
