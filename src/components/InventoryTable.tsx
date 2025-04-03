@@ -368,14 +368,16 @@ export function InventoryTable() {
     },
   })
 
+  const pageCount = table.getPageCount();
+  const rowLength = table.getRowModel().rows.length;
   const emptyRows = useMemo(() => {
-    const numFillerRows = (pageSize - (table.getRowModel().rows.length % pageSize)) % pageSize
+    const numFillerRows = (pageSize - (rowLength % pageSize)) % pageSize
     const emptyRows = Array.from(
-      { length: (pageIndex < table.getPageCount() - 1) ? 0 : numFillerRows},
+      { length: (pageIndex < pageCount - 1) ? 0 : numFillerRows},
       () => (emptyInventoryItem)
     );
     return [...emptyRows];
-  }, [table.getPageCount(), table.getRowModel().rows.length, pageSize, pageIndex])
+  }, [pageCount, rowLength, pageSize, pageIndex])
 
   const noResultsHeight = `${37*pageSize}px`;
 
