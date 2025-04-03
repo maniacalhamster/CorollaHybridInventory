@@ -45,7 +45,8 @@ function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?:
     window.history.pushState(null, '', `?${newUrlSearchParams.toString()}`);
 }
 
-type FilterValueType<T> = T extends number ? (number | undefined)[] : T;
+type FilterValueType<T> =   T extends number ? (number | undefined)[] :
+                            T extends string ? string[] : T;
 
 export type FilterParserResolverMap<T> = Partial<{
     [K in keyof T]: {
