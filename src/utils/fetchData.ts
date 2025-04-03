@@ -116,37 +116,40 @@ function normalizeOptions(options: OptionDataType[], uniqueOptionsMap: Map<strin
   })
 }
 
-export async function fetchInventoryData(): Promise<InventoryItem[]> {
+export async function fetchInventoryData(): Promise<[InventoryItem[], Map<string, OptionDataType>]> {
   const response = await fetch("./corollahybrid.json")
   const rawData = await response.json()
 
   // Keep a shared uniqueOptionsMap between all items for noramlization
   const uniqueOptionsMap = new Map<string, OptionDataType>();
 
-  return rawData.map((item: any) => {
-    const normalizedOptions = normalizeOptions(item.options, uniqueOptionsMap).sort(sortOptions)
+  return [
+    rawData.map((item: any) => {
+      const normalizedOptions = normalizeOptions(item.options, uniqueOptionsMap).sort(sortOptions)
 
-    return {
-      vin: item.vin,
-      distance: item.distance,
-      dealer: item.dealerMarketingName,
-      model: modelResolver(item.model.marketingName),
-      color: colorResolver(item.extColor.marketingName),
-      seating: item.intColor.marketingName,
-      msrp: item.price.baseMsrp,
-      tsrp: item.price.totalMsrp,
-      markup: (item.price.advertizedPrice || item.price.sellingPrice) - item.price.totalMsrp,
-      price: item.price.advertizedPrice || item.price.sellingPrice,
-      dioTsrp: item.price.dioTotalMsrp,
-      dioPrice: item.price.dioTotalDealerSellingPrice,
-      portOptions: portOptionsResolver(normalizedOptions),
-      dealerOptions: dealerOptionsResolver(normalizedOptions),
-      factoryOptions: factoryOptionsResolver(normalizedOptions),
-      status: statusResolver(item.inventoryStatus),
-      estDate: estDateResolver(item.inventoryStatus),
-      presold: item.isPreSold,
-      link: `https://smartpath.toyota.com/inventory/details?source=t1&dealerCd=${item.dealerCd}&vin=${item.vin}&type=new`,
-    }
-  })
+      return {
+        vin: item.vin,
+        distance: item.distance,
+        dealer: item.dealerMarketingName,
+        model: modelResolver(item.model.marketingName),
+        color: colorResolver(item.extColor.marketingName),
+        seating: item.intColor.marketingName,
+        msrp: item.price.baseMsrp,
+        tsrp: item.price.totalMsrp,
+        markup: (item.price.advertizedPrice || item.price.sellingPrice) - item.price.totalMsrp,
+        price: item.price.advertizedPrice || item.price.sellingPrice,
+        dioTsrp: item.price.dioTotalMsrp,
+        dioPrice: item.price.dioTotalDealerSellingPrice,
+        portOptions: portOptionsResolver(normalizedOptions),
+        dealerOptions: dealerOptionsResolver(normalizedOptions),
+        factoryOptions: factoryOptionsResolver(normalizedOptions),
+        status: statusResolver(item.inventoryStatus),
+        estDate: estDateResolver(item.inventoryStatus),
+        presold: item.isPreSold,
+        link: `https://smartpath.toyota.com/inventory/details?source=t1&dealerCd=${item.dealerCd}&vin=${item.vin}&type=new`,
+      }
+    }),
+    uniqueOptionsMap
+  ]
 }
 

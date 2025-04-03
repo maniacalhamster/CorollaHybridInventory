@@ -5,7 +5,6 @@ import {
   CellContext,
   Column,
   type ColumnDef,
-  type ColumnFiltersState,
   Row,
   RowData,
   SortingFn,
@@ -39,6 +38,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
+import { FilterParserResolverMap, useUrlFilters } from "@/utils/hooks"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -280,8 +280,8 @@ const columns: ColumnDef<InventoryItem>[] = [
 
 export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
+  const [uniqueOptionsMap, setUniqueOptionsMap] = useState<Map<string, OptionDataType>>(new Map)
   const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     'msrp': false,
     'estDate': false,
@@ -295,8 +295,40 @@ export function InventoryTable() {
   const {pageIndex, pageSize} = pagination
 
   useEffect(() => {
-    fetchInventoryData().then(setData)
+    fetchInventoryData().then(([data, uniqueOptionsList]) => (
+      setData(data),
+      setUniqueOptionsMap(uniqueOptionsList)
+    ))
   }, [])
+
+  const filterParserResolverMap = useMemo<FilterParserResolverMap<InventoryItem>>(() => {
+    const optionResolverParserMap = {
+      resolver: (options: OptionDataType[]) => options.map(({optionCd}) => optionCd).join(','),
+      parser: (options: string) => options.split(',').map((optionCd) => uniqueOptionsMap.get(optionCd)!)
+    }
+
+    const rangeResolverParserMap = {
+      resolver: (range: (number | undefined)[]) => range.join(':'),
+      parser: (range: string) => range.split(':').map((val) => val === '' ? undefined : parseInt(val))
+    }
+
+    return {
+      'portOptions': optionResolverParserMap,
+      'dealerOptions': optionResolverParserMap,
+      'factoryOptions': optionResolverParserMap,
+      'distance': rangeResolverParserMap,
+      'msrp': rangeResolverParserMap,
+      'tsrp': rangeResolverParserMap,
+      'markup': rangeResolverParserMap,
+      'price': rangeResolverParserMap
+    }
+  }, [uniqueOptionsMap])
+
+  const [ columnFilters, handleFilterChange ] = useUrlFilters<InventoryItem>(
+    data.length > 0 ,
+    filterParserResolverMap
+  );
+
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({ column }) => (
@@ -328,7 +360,7 @@ export function InventoryTable() {
     defaultColumn,
     enableMultiSort: true,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    onColumnFiltersChange: handleFilterChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
