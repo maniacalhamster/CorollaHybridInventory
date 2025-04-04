@@ -2,16 +2,14 @@ import puppeteer from "puppeteer";
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
-import { fileURLToPath } from "url";
 
 /**
  * main body of the script I want to run
  * @param {import("puppeteer").Page} page
  */
 async function script(page) {
-    const curr_dir = path.dirname(fileURLToPath(import.meta.url))
     const filename = `${model}.json`
-    const dest_path = path.join(curr_dir, '..', 'public', filename)
+    const dest_path = path.join("public", filename)
 
     const inventory_url = `https://www.toyota.com/search-inventory/model/${model}/?zipcode=${zipcode}`
     const graphql_url = "https://api.search-inventory.toyota.com/graphql";
