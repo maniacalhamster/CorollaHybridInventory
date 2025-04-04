@@ -28,7 +28,7 @@ export function DebouncedInput({
     }, debounce)
 
     return () => clearTimeout(timeout)
-  }, [value])
+  }, [debounce, onChange, value])
 
   return (
     <input
@@ -51,13 +51,13 @@ export default function ColumnFilter<T, V>({ column, table }: {
   const [facetedMinValue, facetedMaxValue] = column.getFacetedMinMaxValues()??[];
 
 
+  const getUniqueValues = column.columnDef.getUniqueValues
+  const getFilteredRowModel = table.getFilteredRowModel;
   const facetedUniqueValues = React.useMemo(() => {
     if (filterVariant !== 'multi-select' || !column.id.includes('option')) return Array.from(facetedUniqueValuesMap.entries())
 
-    const getUniqueValues = column.columnDef.getUniqueValues
-
-    const newFacetedUniqueValuesMap = new Map<any, number>()
-    table.getFilteredRowModel().rows.forEach(({original, index}) => {
+    const newFacetedUniqueValuesMap = new Map<unknown, number>()
+    getFilteredRowModel().rows.forEach(({original, index}) => {
       const uniqueValues = getUniqueValues?.(original, index)
       uniqueValues?.forEach(value => {
         newFacetedUniqueValuesMap.set(
@@ -68,7 +68,7 @@ export default function ColumnFilter<T, V>({ column, table }: {
     })
 
     return Array.from(newFacetedUniqueValuesMap.entries())
-  }, [facetedUniqueValuesMap, filterVariant])
+  }, [filterVariant, column.id, facetedUniqueValuesMap, getFilteredRowModel, getUniqueValues])
 
   return filterVariant === 'range' ? (
     <div>
