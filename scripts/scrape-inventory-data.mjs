@@ -48,6 +48,8 @@ async function script(page) {
         }
     }
 
+    if (!fs.existsSync("public")) fs.mkdirSync("public");
+
     fs.writeFile(dest_path, JSON.stringify(vehicle_data), (err) => {
         if (err) {
             console.log(err)
