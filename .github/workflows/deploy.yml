@@ -3,7 +3,7 @@ name: Static deployment to Github Pages
 on:
   push:
     branches:
-      - main
+      - gh-pages
   
   workflow_dispatch:
 
