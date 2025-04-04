@@ -31,9 +31,6 @@ jobs:
           node-version: 20
           cache: 'npm'
       
-      - name: Install Dependencies
-        run: npm install
-
       - name: Setup Pages
         id: setup_pages
         uses: actions/configure-pages@v5
@@ -41,28 +38,72 @@ jobs:
       - name: Restore Cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.npm
-            ${{ github.workspace }}/.next/cache
+          path: ${{ github.workspace }}/.next/cache
           # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Check for src file change
+        id: changes
+        run: |
+          if git diff --quiet ${{ github.event.before }} ${{ github.sha }} -- '**/*.js' '**/*.jsx' '**/*.ts' '**/*.tsx'
+            echo "src file changed: FALSE"
+            echo "changed=false >> $GITHUB_OUTPUT"
+          else
+            echo "src file changed: TRUE"
+            echo "changed=true >> $GITHUB_OUTPUT"
+
+      - name: Static build
+        if: steps.changes.outputs.changed == 'true'
+        run: npm run build
+        env:
+          PAGES_BASE_PATH: ${{ steps.setup_pages.outputs.base_path }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-artifact
+          path: ./out
+
+  fetch:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+            node-version: 20
+            cach: 'npm'
+
+      - name: Install Deps
+        run: npm ci
+      
       - name: Fetch/Web scrape data
         uses: jexniemi/browserless-action-runner@v0.1
         with:
           start_commands: |
             npm run fetch
 
-      - name: Static build
-        run: npm run build
-        env:
-          PAGES_BASE_PATH: ${{ steps.setup_pages.outputs.base_path }}
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site-artifact
+          path: ./out
+      
+      - name: Copy data into site artifact
+        run: cp -r ./public ./out/public
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload updated artifact
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./out
 
@@ -72,7 +113,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, fetch]
+    if: always()
     steps:
       - name: Deploy to Github Pages
         id: deployment
