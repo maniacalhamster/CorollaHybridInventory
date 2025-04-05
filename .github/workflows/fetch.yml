@@ -40,7 +40,7 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: site-artifact
+          name: github-pages
           path: ./out
       
       - name: Copy data into site artifact
