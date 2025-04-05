@@ -1,6 +1,11 @@
 name: fetch-data-and-deploy
 
 on:
+  workflow_run:
+    workflows: ["build"]
+    types:
+      - completed
+
   workflow_dispatch:
 
 # GITHUB_TOKEN perms
