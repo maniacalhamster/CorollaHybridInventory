@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  basePath: "/CorollaHybridInventory"
 };
 
 export default nextConfig;

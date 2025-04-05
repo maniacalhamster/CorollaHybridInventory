@@ -34,6 +34,9 @@ jobs:
       - name: Setup Pages
         id: setup_pages
         uses: actions/configure-pages@v5
+        with:
+          # Auto inject baseBath in next.config.js so localhost
+          static_site_generator: next
       
       - name: Restore Cache
         uses: actions/cache@v4
