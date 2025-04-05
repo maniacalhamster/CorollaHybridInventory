@@ -113,7 +113,7 @@ jobs:
           path: ./out
       
       - name: Copy data into site artifact
-        run: cp -r ./public ./out/public
+        run: cp -r ./public ./out
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
