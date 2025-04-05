@@ -36,7 +36,7 @@ jobs:
           start_commands: |
             npm run fetch
 
-      - name: Download build artifact
+      - name: Download pages artifact
         uses: actions/download-artifact@v4
         with:
           name: github-pages
@@ -45,7 +45,7 @@ jobs:
       - name: Copy data into site artifact
         run: cp -r ./public ./out/public
 
-      - name: Upload updated artifact
+      - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./out
