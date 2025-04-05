@@ -77,12 +77,34 @@ jobs:
 
       - name: Install Deps
         run: npm ci
-      
+
+      - name: Cache browserless image
+        id: cache-browserless
+        uses: actions/cache@v3
+        with:
+          path: /tmp/browserless-chromium.tar
+          key: ${{ runner.os }}-browserless-chromium-v2.18.0
+
+      - name: Load cached image if available
+        run: |
+          if [ -f /tmp/browserless-chromium.tar ]; then
+            echo "Loading browserless image from cache..."
+            docker load -i /tmp/browserless-chromium.tar
+          else
+            echo "Cache miss. Image will be pulled by the action and saved afterward."
+          fi
+
       - name: Fetch/Web scrape data
         uses: jexniemi/browserless-action-runner@v0.1
         with:
           start_commands: |
             npm run fetch
+
+      - name: Save image to cache (if not already cached)
+        if: steps.cache-browserless.outputs.cache-hit != 'true'
+        run: |
+          echo "Saving browserless image to cache..."
+          docker save ghcr.io/browserless/chromium:v2.18.0 -o /tmp/browserless-chromium.tar
 
       - name: Download pages artifact
         uses: actions/download-artifact@v4
