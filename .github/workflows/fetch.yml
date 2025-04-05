@@ -1,4 +1,4 @@
-name: Fetch/Web Scrape data and update Github Page
+name: fetch-data-and-deploy
 
 on:
   workflow_dispatch:

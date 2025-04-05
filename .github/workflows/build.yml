@@ -1,4 +1,4 @@
-name: NextJS Build & Deploy to Github Pages
+name: build-app-and-deploy
 
 on:
   push:
