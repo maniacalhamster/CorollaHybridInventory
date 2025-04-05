@@ -1,0 +1,64 @@
+name: Fetch/Web Scrape data and update Github Page
+
+on:
+  workflow_dispatch:
+
+# GITHUB_TOKEN perms
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+            node-version: 20
+            cach: 'npm'
+
+      - name: Install Deps
+        run: npm ci
+      
+      - name: Fetch/Web scrape data
+        uses: jexniemi/browserless-action-runner@v0.1
+        with:
+          start_commands: |
+            npm run fetch
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site-artifact
+          path: ./out
+      
+      - name: Copy data into site artifact
+        run: cp -r ./public ./out/public
+
+      - name: Upload updated artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./out
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    needs: fetch
+    steps:
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
