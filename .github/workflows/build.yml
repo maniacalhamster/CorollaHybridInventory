@@ -58,6 +58,12 @@ jobs:
         with:
           path: ./out
 
+      - name: Upload build artifact for next workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: ./out
+
   deploy:
     environment:
       name: github-pages
