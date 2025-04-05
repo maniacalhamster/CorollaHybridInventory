@@ -2,16 +2,14 @@ import puppeteer from "puppeteer";
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
-import { fileURLToPath } from "url";
 
 /**
  * main body of the script I want to run
  * @param {import("puppeteer").Page} page
  */
 async function script(page) {
-    const curr_dir = path.dirname(fileURLToPath(import.meta.url))
     const filename = `${model}.json`
-    const dest_path = path.join(curr_dir, '..', 'public', filename)
+    const dest_path = path.join("public", filename)
 
     const inventory_url = `https://www.toyota.com/search-inventory/model/${model}/?zipcode=${zipcode}`
     const graphql_url = "https://api.search-inventory.toyota.com/graphql";
@@ -19,7 +17,9 @@ async function script(page) {
 
     await page.goto(inventory_url);
     debugger;
-    await page.waitForSelector(distance_sel);
+    await page.waitForSelector(distance_sel, {
+        timeout: 60000
+    });
     page.select(distance_sel, "100").then(() => console.log(`distance set to: ${distance}`));
 
     const vehicle_data = []
@@ -48,6 +48,8 @@ async function script(page) {
         }
     }
 
+    if (!fs.existsSync("public")) fs.mkdirSync("public");
+
     fs.writeFile(dest_path, JSON.stringify(vehicle_data), (err) => {
         if (err) {
             console.log(err)
@@ -64,7 +66,10 @@ async function script(page) {
  * - defers a final close on the browser if it still exists
  */
 async function main() {
-  const browser = await puppeteer.launch({ headless: false });
+  const launchArgs = JSON.stringify({ headless: false });
+  const browser = await puppeteer.connect({
+    browserWSEndpoint: `ws://localhost:3000?launch=${launchArgs}`,
+  });
   const page = await browser.newPage();
   script(page)
     .catch((err) => console.log(err))
