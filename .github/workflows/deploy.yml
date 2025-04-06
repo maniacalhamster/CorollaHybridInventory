@@ -91,7 +91,7 @@ jobs:
           path: ./out
       
       - name: Copy data into site artifact
-        run: cp -r ./public ./out
+        run: cp ./public/* ./out
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
