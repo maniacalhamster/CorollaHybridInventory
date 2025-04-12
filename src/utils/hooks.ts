@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 const FILTER_KEY_PREFIX = 'filter_';
 const SORTING_KEY = 'sort';
-const SORTING_COL_DELIM = ';';
+const SORTING_COL_DELIM = ' ';
 const SORTING_KEY_DELIM = '.';
 
 function parseUrlFilters<T>(searchParams: URLSearchParams, filterParserResolverMap?: UrlParserResolverMap<T>): ColumnFiltersState {
