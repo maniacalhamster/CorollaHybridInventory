@@ -116,7 +116,8 @@ const optionFilterFn: (row: Row<InventoryItem>, columnId: string, filterValue: O
   filterValue: OptionDataType[]
 ) => {
   const currOptionCds = (row.getValue(columnId) as OptionDataType[]).map(({ optionCd }) => optionCd)
-  return filterValue.every(({optionCd: filterCd}) => currOptionCds.includes(filterCd));
+  return currOptionCds.some((optionCd) => filterValue.map(({optionCd: filterCd}) => filterCd).includes(optionCd))
+  // return filterValue.every(({optionCd: filterCd}) => currOptionCds.includes(filterCd));
 }
 
 const optionSortingFn: SortingFn<InventoryItem> = (
