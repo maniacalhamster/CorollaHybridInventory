@@ -60,16 +60,33 @@ async function script(page) {
 }
 
 /**
+ * Start up browser based off env:
+ * - localhost: launch chrome
+ * - Github workflow: connect to running browserless instance
+ * 
+ * @param {import("puppeteer").LaunchOptions} config
+ * @returns {Promise<import("puppeteer").Browser>}
+ */
+async function setupBrowser(config) {
+    if (!process.env.GITHUB_ACTIONS) {
+        return puppeteer.launch(config)
+    }
+
+    const launchArgs = JSON.stringify(config);
+    return puppeteer.connect({
+        browserWSEndpoint: `ws://localhost:3000?launch=${launchArgs}`,
+    });
+}
+
+/**
  * "main" async function call 
  * - mostly puppeteer scaffolding w/ minor configurations
  * - catches errors
  * - defers a final close on the browser if it still exists
  */
 async function main() {
-  const launchArgs = JSON.stringify({ headless: false });
-  const browser = await puppeteer.connect({
-    browserWSEndpoint: `ws://localhost:3000?launch=${launchArgs}`,
-  });
+  const browser = await setupBrowser({ headless: false });
+
   const page = await browser.newPage();
   script(page)
     .catch((err) => console.log(err))
