@@ -70,24 +70,24 @@ export default function ColumnFilter<T, V>({ column, table }: {
     return Array.from(newFacetedUniqueValuesMap.entries())
   }, [filterVariant, column.id, facetedUniqueValuesMap, getFilteredRowModel, getUniqueValues])
 
+  const rangeMinCallback = React.useCallback((value: string | number) => column.setFilterValue((old: [number, number]) => [value, old?.[1]]), [column])
+  const rangeMaxCallback = React.useCallback((value: string | number) => column.setFilterValue((old: [number, number]) => [old?.[0], value]), [column])
+  const searchCallback = React.useCallback((value: string | number) => column.setFilterValue(value), [column])
+
   return filterVariant === 'range' ? (
     <div>
       <div className="flex space-x-2">
         <DebouncedInput
           type="number"
           value={(columnFilterValue as [number, number])?.[0] ?? ''}
-          onChange={value =>
-            column.setFilterValue((old: [number, number]) => [value, old?.[1]])
-          }
+          onChange={rangeMinCallback}
           placeholder={`${facetedMinValue}`}
           className="w-12 border shadow rounded"
         />
         <DebouncedInput
           type="number"
           value={(columnFilterValue as [number, number])?.[1] ?? ''}
-          onChange={value =>
-            column.setFilterValue((old: [number, number]) => [old?.[0], value])
-          }
+          onChange={rangeMaxCallback}
           placeholder={`${facetedMaxValue}`}
           className="w-12 border shadow rounded"
         />
@@ -144,7 +144,7 @@ export default function ColumnFilter<T, V>({ column, table }: {
     <DebouncedInput
       type="text"
       value={(columnFilterValue ?? '') as string}
-      onChange={value => column.setFilterValue(value)}
+      onChange={searchCallback}
       placeholder={`Search...`}
       className="w-full border shadow rounded"
       list={`${column.id}-list`}
