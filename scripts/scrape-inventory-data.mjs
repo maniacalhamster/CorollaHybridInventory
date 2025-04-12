@@ -17,10 +17,8 @@ async function script(page) {
 
     await page.goto(inventory_url);
     debugger;
-    await page.waitForSelector(distance_sel, {
-        timeout: 60000
-    });
-    page.select(distance_sel, "100").then(() => console.log(`distance set to: ${distance}`));
+    await page.waitForSelector(distance_sel);
+    page.select(distance_sel, String(distance)).then(() => console.log(`distance set to: ${distance}`));
 
     const vehicle_data = []
 
