@@ -14,11 +14,10 @@ function parseUrlFilters<T>(searchParams: URLSearchParams, filterParserResolverM
 
     searchParams.forEach((value, key) => {
         if (key.startsWith(FILTER_KEY_PREFIX)) {
-            const decodedValue = decodeURIComponent(value);
             const columnId = key.replace(FILTER_KEY_PREFIX, '');
 
             const { parser } = filterParserResolverMap?.[ columnId as keyof T]??{};
-            const parsedValue = parser ? parser(decodedValue) : decodedValue;
+            const parsedValue = parser ? parser(value) : value;
             if (!parsedValue) return
 
             filters.push({
@@ -39,10 +38,9 @@ function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?:
         const resolvedValue = resolver ? resolver(value as UrlValueType<T[keyof T]>) : value
         if (!resolvedValue) return;
 
-        const encodedValue = encodeURIComponent(resolvedValue as string);
         const prefixedKey = `${FILTER_KEY_PREFIX}${id}`;
 
-        newUrlSearchParams.set(prefixedKey, encodedValue);
+        newUrlSearchParams.set(prefixedKey, resolvedValue as string);
     })
 
     window.history.pushState(null, '', `?${newUrlSearchParams.toString()}`);

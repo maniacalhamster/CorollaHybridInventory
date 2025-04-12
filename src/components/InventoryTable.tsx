@@ -288,9 +288,12 @@ export function InventoryTable() {
   }, [])
 
   const filterParserResolverMap = useMemo<UrlParserResolverMap<InventoryItem>>(() => {
+const MULTI_SELECT_DELIM = ' ';
+    const SPACE_REPLACER = '_';
+
     const optionResolverParserMap = {
-      resolver: (options: OptionDataType[]) => options.map(({optionCd}) => optionCd).join(','),
-      parser: (options: string) => options.split(',').map((optionCd) => uniqueOptionsMap.get(optionCd)!)
+      resolver: (options: OptionDataType[]) => options.map(({optionCd}) => optionCd).join(MULTI_SELECT_DELIM),
+      parser: (options: string) => options.split(MULTI_SELECT_DELIM).map((optionCd) => uniqueOptionsMap.get(optionCd)!)
     }
 
     const rangeResolverParserMap = {
@@ -299,8 +302,8 @@ export function InventoryTable() {
     }
 
     const stringMultiselectResolverParserMap = {
-      resolver: (dealers: string[]) => dealers.join(','),
-      parser: (dealers: string) => dealers.split(','),
+      resolver: (values: string[]) => values.map(value => value.replaceAll(/\s/g, SPACE_REPLACER)).join(MULTI_SELECT_DELIM),
+      parser: (value: string) => value.split(MULTI_SELECT_DELIM).map(value => value.replaceAll(SPACE_REPLACER, ' ')),
     }
 
     return {
