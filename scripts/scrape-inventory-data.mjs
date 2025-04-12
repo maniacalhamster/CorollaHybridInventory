@@ -70,6 +70,10 @@ async function setupBrowser(config) {
         return puppeteer.launch(config)
     }
 
+    if (!process.env.BROWSERLESS_API_KEY) {
+        throw "Missing API key for BaaS!"
+    }
+
     return puppeteer.connect({
         browserWSEndpoint: `wss://production-sfo.browserless.io/?token=${process.env.BROWSERLESS_API_KEY}&proxy=residential&proxyCountry=us&proxySticky&headless=false`,
     })
