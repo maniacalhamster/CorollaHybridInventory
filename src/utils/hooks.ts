@@ -1,10 +1,13 @@
 'use client';
 
-import { ColumnFiltersState, OnChangeFn } from "@tanstack/react-table";
+import { ColumnFiltersState, OnChangeFn, SortingState } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const FILTER_KEY_PREFIX = 'filter_';
+const SORTING_KEY = 'sort';
+const SORTING_COL_DELIM = ';';
+const SORTING_KEY_DELIM = '.';
 
 function parseUrlFilters<T>(searchParams: URLSearchParams, filterParserResolverMap?: UrlParserResolverMap<T>): ColumnFiltersState {
     const filters: ColumnFiltersState = [];
@@ -45,6 +48,29 @@ function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?:
     window.history.pushState(null, '', `?${newUrlSearchParams.toString()}`);
 }
 
+function parseUrlSorting(searchParams: URLSearchParams): SortingState {
+    const sortParam = searchParams.get(SORTING_KEY)
+    if (!sortParam) return [];
+
+    return sortParam.split(SORTING_COL_DELIM).map(col => {
+        const [id, desc] = col.split(SORTING_KEY_DELIM);
+        return { id, desc: desc === 'desc' };
+    })
+}
+
+function setUrlSorting(sorting: SortingState) {
+    const newUrlSearchParams = new URLSearchParams(window.location.search);
+
+    if (sorting.length === 0) {
+        newUrlSearchParams.delete(SORTING_KEY);
+    } else {
+        const sortParam = sorting.map(({id, desc}) => `${id}${SORTING_KEY_DELIM}${desc ? 'desc' : 'asc'}`).join(SORTING_COL_DELIM)
+        newUrlSearchParams.set(SORTING_KEY, sortParam)
+    }
+
+    window.history.replaceState(null, '', `?${newUrlSearchParams.toString()}`)
+}
+
 type UrlValueType<T> =   T extends number ? (number | undefined)[] :
                             T extends string ? string[] : T;
 
@@ -54,6 +80,35 @@ export type UrlParserResolverMap<T> = Partial<{
         parser: (value: string) =>  UrlValueType<T[K]>
     }
 }>
+
+export function useUrlSorting(dataIsLoaded: boolean) {
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        if (!dataIsLoaded) return;
+
+        const urlSorting = parseUrlSorting(searchParams);
+
+        setSorting(urlSorting);
+    }, [searchParams, dataIsLoaded])
+
+    const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+        if (typeof updater === 'function') {
+            const newSorting = updater(sorting)
+            setSorting(newSorting)
+            setUrlSorting(newSorting);
+        } else {
+            setSorting(updater);
+            setUrlSorting(updater);
+        }
+    }
+
+    return [
+        sorting,
+        handleSortingChange
+    ] as const;
+}
 
 export function useUrlFilters<T>(dataIsLoaded: boolean, filterParserResolverMap?: UrlParserResolverMap<T>) {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);

@@ -8,7 +8,6 @@ import {
   Row,
   RowData,
   SortingFn,
-  type SortingState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -38,7 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
-import { UrlParserResolverMap, useUrlFilters} from "@/utils/hooks"
+import { UrlParserResolverMap, useUrlFilters, useUrlSorting } from "@/utils/hooks"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -269,7 +268,6 @@ const columns: ColumnDef<InventoryItem>[] = [
 export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
   const [uniqueOptionsMap, setUniqueOptionsMap] = useState<Map<string, OptionDataType>>(new Map)
-  const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     'msrp': false,
     'estDate': false,
@@ -325,7 +323,7 @@ export function InventoryTable() {
     data.length > 0 ,
     filterParserResolverMap
   );
-
+  const [sorting, setSorting] = useUrlSorting(data.length > 0)
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({ column }) => (
