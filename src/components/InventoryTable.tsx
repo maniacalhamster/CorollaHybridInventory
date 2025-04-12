@@ -270,8 +270,10 @@ export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
   const [uniqueOptionsMap, setUniqueOptionsMap] = useState<Map<string, OptionDataType>>(new Map)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    'seating': false,
     'msrp': false,
-    'estDate': false,
+    'price': false,
+    // 'estDate': false,
     // 'presold': false,
   })
   const [pagination, setPagination] = useState({
@@ -289,7 +291,7 @@ export function InventoryTable() {
   }, [])
 
   const filterParserResolverMap = useMemo<UrlParserResolverMap<InventoryItem>>(() => {
-const MULTI_SELECT_DELIM = ' ';
+    const MULTI_SELECT_DELIM = ' ';
     const SPACE_REPLACER = '_';
 
     const optionResolverParserMap = {
