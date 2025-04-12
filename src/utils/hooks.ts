@@ -29,7 +29,7 @@ function parseUrlFilters<T>(searchParams: URLSearchParams, filterParserResolverM
 }
 
 function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?: UrlParserResolverMap<T>) {
-    const newUrlSearchParams = new URLSearchParams();
+    const newUrlSearchParams = new URLSearchParams(window.location.search);
 
     filters.forEach(({id, value}) => {
         const { resolver } = filterParserResolverMap?.[ id as keyof T ]??{}
@@ -63,10 +63,9 @@ export function useUrlFilters<T>(dataIsLoaded: boolean, filterParserResolverMap?
         if (!dataIsLoaded) return;
 
         const filters = parseUrlFilters(searchParams, filterParserResolverMap);
-        if (JSON.stringify(filters) === JSON.stringify(columnFilters)) return;
 
         setColumnFilters(filters);
-    }, [searchParams, filterParserResolverMap, dataIsLoaded, columnFilters]);
+    }, [searchParams, filterParserResolverMap, dataIsLoaded]);
 
     const handleFilterChange: OnChangeFn<ColumnFiltersState> = (updater) => {
         if (typeof updater === 'function') {
