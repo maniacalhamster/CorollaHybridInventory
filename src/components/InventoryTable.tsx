@@ -8,7 +8,6 @@ import {
   Row,
   RowData,
   SortingFn,
-  type SortingState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -38,7 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { type InventoryItem, OptionDataType, emptyInventoryItem, fetchInventoryData } from "@/utils/fetchData"
 import { cn } from "@/lib/utils"
 import ColumnFilter from "./ui/columnFilter"
-import { FilterParserResolverMap, useUrlFilters } from "@/utils/hooks"
+import { UrlParserResolverMap, useUrlFilters, useUrlSorting } from "@/utils/hooks"
 
 const renderSortIndicator = (column: Column<InventoryItem>) => {
   const sortIndex = column.getSortIndex()
@@ -117,7 +116,8 @@ const optionFilterFn: (row: Row<InventoryItem>, columnId: string, filterValue: O
   filterValue: OptionDataType[]
 ) => {
   const currOptionCds = (row.getValue(columnId) as OptionDataType[]).map(({ optionCd }) => optionCd)
-  return filterValue.every(({optionCd: filterCd}) => currOptionCds.includes(filterCd));
+  return currOptionCds.some((optionCd) => filterValue.map(({optionCd: filterCd}) => filterCd).includes(optionCd))
+  // return filterValue.every(({optionCd: filterCd}) => currOptionCds.includes(filterCd));
 }
 
 const optionSortingFn: SortingFn<InventoryItem> = (
@@ -269,7 +269,6 @@ const columns: ColumnDef<InventoryItem>[] = [
 export function InventoryTable() {
   const [data, setData] = useState<InventoryItem[]>([])
   const [uniqueOptionsMap, setUniqueOptionsMap] = useState<Map<string, OptionDataType>>(new Map)
-  const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     'msrp': false,
     'estDate': false,
@@ -289,10 +288,13 @@ export function InventoryTable() {
     ))
   }, [])
 
-  const filterParserResolverMap = useMemo<FilterParserResolverMap<InventoryItem>>(() => {
+  const filterParserResolverMap = useMemo<UrlParserResolverMap<InventoryItem>>(() => {
+const MULTI_SELECT_DELIM = ' ';
+    const SPACE_REPLACER = '_';
+
     const optionResolverParserMap = {
-      resolver: (options: OptionDataType[]) => options.map(({optionCd}) => optionCd).join(','),
-      parser: (options: string) => options.split(',').map((optionCd) => uniqueOptionsMap.get(optionCd)!)
+      resolver: (options: OptionDataType[]) => options.map(({optionCd}) => optionCd).join(MULTI_SELECT_DELIM),
+      parser: (options: string) => options.split(MULTI_SELECT_DELIM).map((optionCd) => uniqueOptionsMap.get(optionCd)!)
     }
 
     const rangeResolverParserMap = {
@@ -301,8 +303,8 @@ export function InventoryTable() {
     }
 
     const stringMultiselectResolverParserMap = {
-      resolver: (dealers: string[]) => dealers.join(','),
-      parser: (dealers: string) => dealers.split(','),
+      resolver: (values: string[]) => values.map(value => value.replaceAll(/\s/g, SPACE_REPLACER)).join(MULTI_SELECT_DELIM),
+      parser: (value: string) => value.split(MULTI_SELECT_DELIM).map(value => value.replaceAll(SPACE_REPLACER, ' ')),
     }
 
     return {
@@ -325,7 +327,7 @@ export function InventoryTable() {
     data.length > 0 ,
     filterParserResolverMap
   );
-
+  const [sorting, setSorting] = useUrlSorting(data.length > 0)
 
   const defaultColumn: Partial<ColumnDef<InventoryItem>> = {
     header: ({ column }) => (
