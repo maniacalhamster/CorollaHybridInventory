@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 const FILTER_KEY_PREFIX = 'filter_';
 
-function parseUrlFilters<T>(searchParams: URLSearchParams, filterParserResolverMap?: FilterParserResolverMap<T>): ColumnFiltersState {
+function parseUrlFilters<T>(searchParams: URLSearchParams, filterParserResolverMap?: UrlParserResolverMap<T>): ColumnFiltersState {
     const filters: ColumnFiltersState = [];
 
     searchParams.forEach((value, key) => {
@@ -28,12 +28,12 @@ function parseUrlFilters<T>(searchParams: URLSearchParams, filterParserResolverM
     return filters;
 }
 
-function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?: FilterParserResolverMap<T>) {
+function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?: UrlParserResolverMap<T>) {
     const newUrlSearchParams = new URLSearchParams();
 
     filters.forEach(({id, value}) => {
         const { resolver } = filterParserResolverMap?.[ id as keyof T ]??{}
-        const resolvedValue = resolver ? resolver(value as FilterValueType<T[keyof T]>) : value
+        const resolvedValue = resolver ? resolver(value as UrlValueType<T[keyof T]>) : value
         if (!resolvedValue) return;
 
         const encodedValue = encodeURIComponent(resolvedValue as string);
@@ -45,17 +45,17 @@ function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?:
     window.history.pushState(null, '', `?${newUrlSearchParams.toString()}`);
 }
 
-type FilterValueType<T> =   T extends number ? (number | undefined)[] :
+type UrlValueType<T> =   T extends number ? (number | undefined)[] :
                             T extends string ? string[] : T;
 
-export type FilterParserResolverMap<T> = Partial<{
+export type UrlParserResolverMap<T> = Partial<{
     [K in keyof T]: {
-        resolver: (value: FilterValueType<T[K]>) => string
-        parser: (value: string) =>  FilterValueType<T[K]>
+        resolver: (value: UrlValueType<T[K]>) => string
+        parser: (value: string) =>  UrlValueType<T[K]>
     }
 }>
 
-export function useUrlFilters<T>(dataIsLoaded: boolean, filterParserResolverMap?: FilterParserResolverMap<T>) {
+export function useUrlFilters<T>(dataIsLoaded: boolean, filterParserResolverMap?: UrlParserResolverMap<T>) {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const searchParams = useSearchParams();
 
