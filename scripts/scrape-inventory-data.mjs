@@ -70,10 +70,9 @@ async function setupBrowser(config) {
         return puppeteer.launch(config)
     }
 
-    const launchArgs = JSON.stringify(config);
     return puppeteer.connect({
-        browserWSEndpoint: `ws://localhost:3000?launch=${launchArgs}`,
-    });
+        browserWSEndpoint: `wss://production-sfo.browserless.io/?token=${process.env.BROWSERLESS_API_KEY}&proxy=residential&proxyCountry=us&proxySticky&headless=false`,
+    })
 }
 
 /**

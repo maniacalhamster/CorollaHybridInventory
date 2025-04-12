@@ -82,10 +82,9 @@ jobs:
         run: npm ci
       
       - name: Fetch/Web scrape data
-        uses: jexniemi/browserless-action-runner@v0.1
-        with:
-          start_commands: |
-            npm run fetch
+        env:
+          BROWSERLESS_API_KEY: ${{ secrets.BROWSERLESS_API_KEY }}
+        run: npm run fetch
 
       - name: Download pages artifact
         uses: actions/download-artifact@v4
