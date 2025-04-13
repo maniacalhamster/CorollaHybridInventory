@@ -33,14 +33,14 @@ const MultiSelectDropdown = <T,>({
 
   return (
     <DropdownMenu onOpenChange={setOpen} open={open}>
-      <DropdownMenuTrigger asChild className="w-full py-0 h-min min-w-64">
-        <Button variant="outline">
+      <DropdownMenuTrigger asChild className="py-0 h-min w-full max-w-64">
+        <Button className="overflow-hidden hover:overflow-scroll justify-start" variant="outline">
           {selectedValues.length > 0
             ? selectedValues.map((value) => renderValue?.(value)).join(" ")
             : "All"}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="dropdown-content-width-full">
+      <DropdownMenuContent align="start" className="min-w-64">
         <div className="overflow-y-scroll pr-3  max-h-[calc(50vh)]">
           {options?.map(({ label, count, value, details }) => (
             <DropdownMenuCheckboxItem
