@@ -165,7 +165,17 @@ const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: "dealer",
-    ...basicMultiSelectProps
+    ...basicMultiSelectProps,
+    cell: ({ row }) => (
+      <a
+        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(row.original.dealer)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline"
+      >
+        <div className="font-medium">{row.getValue("dealer")}</div>
+      </a>
+    )
   },
   {
     accessorKey: "model",
