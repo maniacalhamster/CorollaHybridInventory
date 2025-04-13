@@ -33,6 +33,14 @@ function parseUrlFilters<T>(searchParams: URLSearchParams, filterParserResolverM
 function setUrlFilters<T>(filters: ColumnFiltersState, filterParserResolverMap?: UrlParserResolverMap<T>) {
     const newUrlSearchParams = new URLSearchParams(window.location.search);
 
+    const activeFilterKeys = new Set(filters.map(({ id }) => id));
+
+    for (const key of [...newUrlSearchParams.keys()]) {
+        if (key.startsWith(FILTER_KEY_PREFIX) && !activeFilterKeys.has(key)) {
+        newUrlSearchParams.delete(key);
+        }
+    }
+
     filters.forEach(({id, value}) => {
         const { resolver } = filterParserResolverMap?.[ id as keyof T ]??{}
         const resolvedValue = resolver ? resolver(value as UrlValueType<T[keyof T]>) : value
