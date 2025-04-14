@@ -87,7 +87,7 @@ async function setupBrowser(config) {
     }
 
     return puppeteer.connect({
-        browserWSEndpoint: `wss://production-sfo.browserless.io/?token=${process.env.BROWSERLESS_API_KEY}&headless=false`,
+        browserWSEndpoint: `wss://production-sfo.browserless.io/?token=${process.env.BROWSERLESS_API_KEY}&proxy=residential&proxyCountry=us&proxySticky&headless=false`,
     })
 }
 
