@@ -16,8 +16,20 @@ async function script(page) {
     const distance_sel = 'select[name="distance"]';
 
     await page.goto(inventory_url);
-    debugger;
-    await page.waitForSelector(distance_sel);
+
+    // Wait for both the 403 response and the selector at the same time
+    const responsePromise = page.waitForResponse(async (response) => {
+        return response.url() === graphql_url && response.status() === 403;
+    });
+    const selectorPromise = page.waitForSelector(distance_sel);
+
+    // Race both promises — the first one to resolve determines the flow
+    const result = await Promise.race([responsePromise, selectorPromise]);
+
+    if (result.status && result.status() === 403) {
+        console.log("Received 403, terminating early.");
+        return; // Exit early if 403 response is received
+    }
     page.select(distance_sel, String(distance)).then(() => console.log(`distance set to: ${distance}`));
 
     const vehicle_data = []
