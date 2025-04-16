@@ -92,20 +92,32 @@ async function setupBrowser(config) {
 }
 
 /**
- * "main" async function call 
- * - mostly puppeteer scaffolding w/ minor configurations
- * - catches errors
- * - defers a final close on the browser if it still exists
+ * Log IP info to debug issues w/ target site rejecting CI workflows
+ * 
+ * @param {import("puppeteer").Page} page 
  */
-async function main() {
-  const browser = await setupBrowser({ headless: false });
+async function logResidentialIpInfo(page) {
+  await page.goto("https://ipinfo.io/json");
+  const ipData = await page.evaluate(() => JSON.parse(document.body.innerText));
 
-  const page = await browser.newPage();
+  // Mask IP before logging
+  const maskedIP = ipData.ip.replace(/\.\d+\.\d+$/, ".xxx");
+  console.log("Browserless IP Info (masked):", {
+    ip: maskedIP,
+    org: ipData.org,
+    city: ipData.city,
+    country: ipData.country,
+  });
+}
 
-  await page.goto("https://api.myip.com");
-  const ipInfo = await page.evaluate(() => document.body.innerText);
-  console.log("Browserless IP Info:", ipInfo);
-
+/**
+ * Prepare browser for scraping:
+ * - set request interception to reduce unneeded network traffic
+ * - set extra HTTP headers / user agent to mimic a real browser
+ * 
+ * @param {import("puppeteer").Page} page 
+ */
+async function prepareBrowser(page) {
   const blockResourceTypes = [
       "image",
       "font",
@@ -142,6 +154,23 @@ async function main() {
   await page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
   );
+
+}
+
+/**
+ * "main" async function call 
+ * - mostly puppeteer scaffolding w/ minor configurations
+ * - catches errors
+ * - defers a final close on the browser if it still exists
+ */
+async function main() {
+  const browser = await setupBrowser({ headless: false });
+
+  const page = await browser.newPage();
+
+  await logResidentialIpInfo(page);
+
+  await prepareBrowser(page);
 
   script(page)
     .catch((err) => console.log(err))
