@@ -102,6 +102,10 @@ async function main() {
 
   const page = await browser.newPage();
 
+  await page.goto("https://api.myip.com");
+  const ipInfo = await page.evaluate(() => document.body.innerText);
+  console.log("Browserless IP Info:", ipInfo);
+
   const blockResourceTypes = [
       "image",
       "font",
