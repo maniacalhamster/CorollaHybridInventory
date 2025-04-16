@@ -17,7 +17,7 @@ async function script(page) {
 
     await page.goto(inventory_url);
 
-    // Wait for both the 403 response and the selector at the same time
+    // Early terminate if any 403 occur (catch IP-based blocks)
     const responsePromise = page.waitForResponse(async (response) => {
         return response.url() === graphql_url && response.status() === 403;
     });
@@ -101,6 +101,35 @@ async function main() {
   const browser = await setupBrowser({ headless: false });
 
   const page = await browser.newPage();
+
+  const blockResourceTypes = [
+      "image",
+      "font",
+      "media",
+      "svg-xml",
+      "png",
+      "ping",
+      "icon"
+  ];
+  
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    const url = req.url().toLowerCase();
+
+    if (
+      blockResourceTypes.includes(req.resourceType()) ||
+      /telemetry|analytics|tracking|beacon|pixel|adservice|doubleclick|report/.test(url) ||
+      /dealers|model-year-list|load|dg-features/.test(url) ||
+      !/toyota|lexus|awswaf|adrum/.test(url) ||
+      (req.method === 'POST' && !/graphql/.test(url))
+    ) {
+      req.abort();
+    } else {
+      req.continue();
+    }
+  });
+  
+
   script(page)
     .catch((err) => console.log(err))
     .finally(() => browser?.close());
