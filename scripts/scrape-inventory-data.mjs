@@ -128,7 +128,16 @@ async function main() {
       req.continue();
     }
   });
-  
+
+  await page.setExtraHTTPHeaders({
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Origin': 'https://www.toyota.com',
+    'Referer': 'https://www.toyota.com/search-inventory',
+  });
+
+  await page.setUserAgent(
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+  );
 
   script(page)
     .catch((err) => console.log(err))
