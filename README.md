@@ -1,3 +1,9 @@
+## Deployment
+
+Currently live w/ data updated daily at 9AM PST on Github Pages: https://maniacalhamster.github.io/CorollaHybridInventory/
+
+## Overview
+
 Sucessor to https://github.com/maniacalhamster/CamryHybridInventory 
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
@@ -16,10 +22,6 @@ You'll need to install dependencies, modify configs, and run the inventory data 
 4. Run `npm run dev` to start the NextJS server
 5. Navigate to the "Local" link (defaults to http://localhost:3000) in your browser
 
-## Demo
-
-![demo.gif](https://i.imgur.com/wYqf0u6.gif "Demo GIF")
-
 ## Why?
 
 Similar story to https://github.com/maniacalhamster/CamryHybridInventory?tab=readme-ov-file#journeystory, but this time, I wanted to
@@ -32,3 +34,5 @@ Similar story to https://github.com/maniacalhamster/CamryHybridInventory?tab=rea
 - [ ] Add a "what it does" section w/ screenshots
 - [ ] Integrate data fetch into main app rather than relying on a script
 - [ ] Remove default configs and prompt user for zipcode/radius
+
+> Outdated - TODOs are better tracked in GitHub Issues
