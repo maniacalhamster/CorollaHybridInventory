@@ -86,11 +86,9 @@ jobs:
           PAGES_BASE_PATH: ${{ steps.setup_pages.outputs.base_path }}
 
       - name: Upload build artifact for next workflow
-        env:
-          ARTIFACT_NAME: ${{ env.ARTIFACT_NAME }}
         uses: actions/upload-artifact@v4
         with:
-          name: $ARTIFACT_NAME
+          name: ${{ env.ARTIFACT_NAME }}
           path: ./out
 
   fetch:
@@ -117,11 +115,9 @@ jobs:
         run: npm run fetch
 
       - name: Download pages artifact
-        env:
-          ARTIFACT_NAME: ${{ env.ARTIFACT_NAME }}
         uses: actions/download-artifact@v4
         with:
-          name: $ARTIFACT_NAME
+          name: ${{ env.ARTIFACT_NAME }}
           path: ./out
       
       - name: Copy data into site artifact
