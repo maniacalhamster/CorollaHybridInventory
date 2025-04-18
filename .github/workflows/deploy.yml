@@ -29,6 +29,9 @@ jobs:
       artifact_exists: ${{ steps.check.outputs.artifact_exists }}
 
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
       - name: Check for build artifact
         id: check
         env:
