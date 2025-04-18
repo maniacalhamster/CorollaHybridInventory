@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   ARTIFACT_NAME: build-artifact
@@ -92,7 +92,7 @@ jobs:
           path: ./out
 
   fetch:
-    if: always()
+    if: ${{ !cancelled() && (needs.check-artifact.outputs.artifact_exists == 'true' || needs.build.result == 'success') }}
     runs-on: ubuntu-latest
     needs: [check-artifact, build]
 
