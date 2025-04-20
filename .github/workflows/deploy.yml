@@ -115,10 +115,12 @@ jobs:
         run: npm run fetch
 
       - name: Download pages artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ./out
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARTIFACT_NAME: ${{ env.ARTIFACT_NAME}}
+        run: |
+          echo "Downloading existing build artifact"
+          gh run download --name "$ARTIFACT_NAME" --dir out
       
       - name: Copy data into site artifact
         run: cp ./public/* ./out
