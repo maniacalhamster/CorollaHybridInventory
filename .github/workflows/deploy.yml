@@ -136,9 +136,11 @@ jobs:
 
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Deploy to Github Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Echo page URL
+        run: echo "Deployed to ${{ steps.deployment.outputs.page_url }}"
