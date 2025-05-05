@@ -6,7 +6,7 @@ on:
       - gh-pages
   workflow_dispatch:
   schedule:
-    - cron: '0 16 * * *' # every day at 9AM PST (4PM UTC)
+    - cron: '0 14 * * *' # every day at 7AM PST (2PM UTC)
 
 # GITHUB_TOKEN perms
 permissions:

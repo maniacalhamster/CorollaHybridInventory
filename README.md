@@ -1,6 +1,6 @@
 ## Deployment
 
-Currently live w/ data updated daily at 9AM PST on Github Pages: https://maniacalhamster.github.io/CorollaHybridInventory/
+Currently live w/ data updated daily at 7AM PST on Github Pages: https://maniacalhamster.github.io/CorollaHybridInventory/
 
 ## Overview
 
