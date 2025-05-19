@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  ARTIFACT_NAME: build-artifact
+  ARTIFACT_NAME: github-pages
 
 jobs:
   check-artifact:
