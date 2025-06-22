@@ -120,10 +120,8 @@ jobs:
           ARTIFACT_NAME: ${{ env.ARTIFACT_NAME}}
         run: |
           echo "Downloading existing build artifact"
-          gh run download --name "$ARTIFACT_NAME"
-          mkdir -p out
-          ls -l
-          tar -xf artifact.tar -C out
+          gh run download --name "$ARTIFACT_NAME" --dir out
+          ls -l out
       
       # - name: Copy data into site artifact
       #   run: cp ./public/* ./out
