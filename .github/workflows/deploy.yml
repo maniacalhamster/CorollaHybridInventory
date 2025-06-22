@@ -100,19 +100,19 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #       node-version: 20
-      #       cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+            node-version: 20
+            cache: 'npm'
 
-      # - name: Install Deps
-      #   run: npm ci
+      - name: Install Deps
+        run: npm ci
       
-      # - name: Fetch/Web scrape data
-      #   env:
-      #     BROWSERLESS_API_KEY: ${{ secrets.BROWSERLESS_API_KEY }}
-      #   run: npm run fetch
+      - name: Fetch/Web scrape data
+        env:
+          BROWSERLESS_API_KEY: ${{ secrets.BROWSERLESS_API_KEY }}
+        run: npm run fetch
 
       - name: Download pages artifact
         env:
@@ -121,15 +121,14 @@ jobs:
         run: |
           echo "Downloading existing build artifact"
           gh run download --name "$ARTIFACT_NAME" --dir out
-          ls -l out
       
-      # - name: Copy data into site artifact
-      #   run: cp ./public/* ./out
+      - name: Copy data into site artifact
+        run: cp ./public/* ./out
 
-      # - name: Upload pages artifact
-      #   uses: actions/upload-pages-artifact@v3
-      #   with:
-      #     path: ./out
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
 
   deploy:
     if: ${{ !cancelled() && needs.fetch.result == 'success' }}
