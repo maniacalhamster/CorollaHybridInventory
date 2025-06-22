@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Corolla Hybrid Inventory Lookup",
-  description: "visualizer for Toyota Corolla Hybrid inventory, using NextJS, Shadcn UI, and TanStack Tables",
+  title: "RAV4 Hybrid Inventory Lookup",
+  description: "visualizer for Toyota RAV4 Hybrid inventory, using NextJS, Shadcn UI, and TanStack Tables",
 };
 
 export default function RootLayout({

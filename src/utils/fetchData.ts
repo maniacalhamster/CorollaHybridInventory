@@ -64,7 +64,7 @@ function estDateResolver (c: string): string {
 };
 
 function modelResolver (c: string): string {
-  return c.replace(/Corolla Hybrid /, '')
+  return c.replace(/RAV4 Hybrid /, '')
 }
 
 function colorResolver (c: string): string {
@@ -117,7 +117,7 @@ function normalizeOptions(options: OptionDataType[], uniqueOptionsMap: Map<strin
 }
 
 export async function fetchInventoryData(): Promise<[InventoryItem[], Map<string, OptionDataType>]> {
-  const response = await fetch("./corollahybrid.json")
+  const response = await fetch("./rav4hybrid.json")
   const rawData = await response.json()
 
   // Keep a shared uniqueOptionsMap between all items for noramlization
