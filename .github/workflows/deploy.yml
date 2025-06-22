@@ -122,7 +122,7 @@ jobs:
           echo "Downloading existing build artifact"
           gh run download --name "$ARTIFACT_NAME"
           mkdir -p out
-          tar -xf "$ARTIFACT_NAME".tar -C out
+          tar -xf artifact.tar -C out
       
       - name: Copy data into site artifact
         run: cp ./public/* ./out
