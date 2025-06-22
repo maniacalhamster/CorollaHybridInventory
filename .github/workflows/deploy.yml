@@ -46,7 +46,7 @@ jobs:
           echo "artifact_exists=true" >> $GITHUB_OUTPUT
 
   build:
-    if: needs.check-artifact.outputs.artifact_exists == 'false'
+    # if: needs.check-artifact.outputs.artifact_exists == 'false'
     needs: check-artifact
     runs-on: ubuntu-latest
 
@@ -120,7 +120,9 @@ jobs:
           ARTIFACT_NAME: ${{ env.ARTIFACT_NAME}}
         run: |
           echo "Downloading existing build artifact"
-          gh run download --name "$ARTIFACT_NAME" --dir out
+          gh run download --name "$ARTIFACT_NAME"
+          mkdir -p out
+          tar -xf "$ARTIFACT_NAME".tar -C out
       
       - name: Copy data into site artifact
         run: cp ./public/* ./out
