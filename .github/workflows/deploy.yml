@@ -46,7 +46,7 @@ jobs:
           echo "artifact_exists=true" >> $GITHUB_OUTPUT
 
   build:
-    # if: needs.check-artifact.outputs.artifact_exists == 'false'
+    if: needs.check-artifact.outputs.artifact_exists == 'false'
     needs: check-artifact
     runs-on: ubuntu-latest
 
